@@ -9,5 +9,5 @@ package Controller;
  * @author USUARIO
  */
 public class NewClass {
-    
+    tralero tralad asd asd
 }

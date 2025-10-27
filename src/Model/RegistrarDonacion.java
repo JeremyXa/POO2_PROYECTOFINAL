@@ -10,21 +10,27 @@ package Model;
  */
 public class RegistrarDonacion {
     
-    private String nombre;
     private final String codigoDonacion;
     private final String descripcionDonacion;
     private final String fechaIngreso;
-
-    public RegistrarDonacion (String name, String codigoDonacion, String descripcionDonacion, String fechaIngreso) {
-        this.nombre = nombre;
+    private int cantidad;
+    
+    public RegistrarDonacion (String name, String codigoDonacion, String descripcionDonacion, String fechaIngreso, int cantidad) {
         this.codigoDonacion = codigoDonacion;
         this.descripcionDonacion = descripcionDonacion;
         this.fechaIngreso = fechaIngreso;
+        this.cantidad = cantidad;
     }
 
-    public String getNombre() { return nombre; }
     public String getcodigoDonacion() { return codigoDonacion; }
+    
     public String getdescripcionDonacion() { return descripcionDonacion; }
     public String getFechaIngreso() { return fechaIngreso; }
-}       
-a
+    public int getcantidad() { return cantidad; }
+} 
+    public void mostrarInfo() {
+        System.out.println("Código de Donación: " + codigoDonacion);
+        System.out.println("Descripcion de la Donacion: " + descripcionDonacion);
+        System.out.println("Fecha de Ingreso: " + fechaIngreso);
+        System.out.println("Cantidad: " + cantidad);
+    }

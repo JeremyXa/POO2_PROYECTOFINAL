@@ -8,6 +8,6 @@ package Model;
  *
  * @author Hernan Grados
  */
-public class NewClass1 {
+public class Donante {
     
 }

@@ -23,7 +23,6 @@ public class RegistrarDonacion {
     }
 
     public String getcodigoDonacion() { return codigoDonacion; }
-    
     public String getdescripcionDonacion() { return descripcionDonacion; }
     public String getFechaIngreso() { return fechaIngreso; }
     public int getcantidad() { return cantidad; }

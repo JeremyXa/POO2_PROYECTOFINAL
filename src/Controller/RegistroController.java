@@ -8,6 +8,6 @@ package Controller;
  *
  * @author USUARIO
  */
-public class NewClass {
+public class RegistroController {
 
 }

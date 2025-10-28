@@ -220,7 +220,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Seleccione la donaci&#xf3;n a modificar:"/>
+        <Property name="text" type="java.lang.String" value="Seleccione la donaci&#xf3;n en la tabla:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField4">

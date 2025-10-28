@@ -94,7 +94,7 @@ public class Visualización extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("Buscar donación ");
 
-        jLabel4.setText("Seleccione la donación a modificar:");
+        jLabel4.setText("Seleccione la donación en la tabla:");
 
         jTextField4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

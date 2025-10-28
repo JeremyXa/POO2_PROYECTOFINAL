@@ -4,6 +4,10 @@
  */
 package Controller;
 
-public class RegistroController {
+/**
+ *
+ * @author Hernan Grados
+ */
+public class ListaController {
     
 }

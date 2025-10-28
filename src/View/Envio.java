@@ -6,16 +6,16 @@ package View;
 
 /**
  *
- * @author USUARIO
+ * @author angel
  */
-public class Visualización extends javax.swing.JFrame {
+public class Envio extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Visualización.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Envio.class.getName());
 
     /**
-     * Creates new form Visualización
+     * Creates new form Envio
      */
-    public Visualización() {
+    public Envio() {
         initComponents();
     }
 
@@ -29,23 +29,23 @@ public class Visualización extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu3 = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
-        jMenu4 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jMenu3.setText("VISUALIZACIÓN");
-        jMenu3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jMenuBar1.add(jMenu3);
+        jMenu4.setText("ENVIO ");
+        jMenu4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jMenuBar1.add(jMenu4);
 
         jMenu1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jMenuBar1.add(jMenu1);
         jMenuBar1.add(jMenu2);
 
-        jMenu4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jMenuBar1.add(jMenu4);
+        jMenu3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -53,11 +53,11 @@ public class Visualización extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 771, Short.MAX_VALUE)
+            .addGap(0, 785, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 437, Short.MAX_VALUE)
+            .addGap(0, 430, Short.MAX_VALUE)
         );
 
         pack();
@@ -85,7 +85,7 @@ public class Visualización extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Visualización().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Envio().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

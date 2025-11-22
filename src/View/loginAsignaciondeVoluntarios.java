@@ -53,7 +53,7 @@ public class loginAsignaciondeVoluntarios extends javax.swing.JFrame {
         jToolBar1.add(jLabel1);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(51, 102, 0));
+        jLabel5.setForeground(new java.awt.Color(80, 167, 123));
         jLabel5.setText("ADRA");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {

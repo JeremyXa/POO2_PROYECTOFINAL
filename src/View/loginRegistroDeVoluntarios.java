@@ -48,7 +48,7 @@ public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
         jToolBar1.add(jLabel1);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(51, 102, 0));
+        jLabel4.setForeground(new java.awt.Color(80, 167, 123));
         jLabel4.setText("ADRA");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N

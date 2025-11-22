@@ -68,7 +68,7 @@ public class loginVisualizacion extends javax.swing.JFrame {
         jLabel3.setText("Contraseña");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(51, 102, 0));
+        jLabel4.setForeground(new java.awt.Color(80, 167, 123));
         jLabel4.setText("ADRA");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);

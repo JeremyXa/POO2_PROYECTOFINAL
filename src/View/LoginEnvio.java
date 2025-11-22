@@ -61,7 +61,7 @@ public class LoginEnvio extends javax.swing.JFrame {
         jToolBar1.add(jLabel1);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(51, 102, 0));
+        jLabel6.setForeground(new java.awt.Color(80, 167, 123));
         jLabel6.setText("ADRA");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {

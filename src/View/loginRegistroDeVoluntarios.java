@@ -44,7 +44,7 @@ public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
         jToolBar1.setRollover(true);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("LOGIN REGISTRO DE VOLUNTARIOS");
+        jLabel1.setText("LOGIN REGISTRO Y ASIGNACION DE VOLUNTARIOS");
         jToolBar1.add(jLabel1);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N

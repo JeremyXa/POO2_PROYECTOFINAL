@@ -4,17 +4,14 @@
  */
 package poo2;
 
-/**
- *
- * @author USUARIO
- */
-public class POO2 {
+import Patrones.SistemaFacade;
+import View.VentanaMenuPrincipal;
 
-    /**
-     * @param args the command line arguments
-     */
+public class POO2 {
     public static void main(String[] args) {
-        // TODO code application logic here
+        SistemaFacade fachada = new SistemaFacade();
+        VentanaMenuPrincipal v = new VentanaMenuPrincipal(fachada);
+        v.setLocationRelativeTo(null);
+        v.setVisible(true);
     }
-    
 }

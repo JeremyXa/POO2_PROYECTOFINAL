@@ -8,6 +8,6 @@ package Controller;
  *
  * @author USUARIO
  */
-public class EnvioController {
+public class InventarioController {
     
 }

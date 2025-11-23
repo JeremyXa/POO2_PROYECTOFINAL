@@ -4,14 +4,17 @@
  */
 package poo2;
 
-import Patrones.SistemaFacade;
-import View.VentanaMenuPrincipal;
+import View.Menu;
 
 public class POO2 {
+
     public static void main(String[] args) {
-        SistemaFacade fachada = new SistemaFacade();
-        VentanaMenuPrincipal v = new VentanaMenuPrincipal(fachada);
-        v.setLocationRelativeTo(null);
-        v.setVisible(true);
-    }
+        java.awt.EventQueue.invokeLater(() -> {
+            Menu menu = new Menu();
+            menu.setLocationRelativeTo(null);
+            menu.setVisible(true);
+        });
+    
 }
+    }
+    

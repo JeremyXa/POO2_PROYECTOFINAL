@@ -3,20 +3,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
+import javax.swing.JOptionPane;
 /**
  *
  * @author angel
  */
 public class loginRegistro extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(loginRegistro.class.getName());
+     private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(loginRegistro.class.getName());
+     
+     // Credenciales simples para el módulo de REGISTRO
+ private static final String USERNAME = "registro";
+    private static final String PASSWORD = "1234";
 
     /**
      * Creates new form loginRegistro
      */
     public loginRegistro() {
-        initComponents();
+      initComponents();
+        setLocationRelativeTo(null); // centrar ventana
     }
 
     /**
@@ -184,19 +190,44 @@ public class loginRegistro extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+         // Enter en usuario (podrías mover el foco a contraseña si quieres)
+        jTextField2.requestFocus();
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
+       // Enter en contraseña -> intentar login
+        jButton7ActionPerformed(evt);
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+         this.dispose();
+        new Menu().setVisible(true);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+        String usuario = jTextField1.getText().trim();
+        String contrasena = jTextField2.getText().trim();
+
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Completa usuario y contraseña.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (USERNAME.equals(usuario) && PASSWORD.equals(contrasena)) {
+            logger.info("Acceso CORRECTO al módulo REGISTRO por el usuario: " + usuario);
+            // Abrir ventana de Registro
+            new Registro().setVisible(true);
+            this.dispose();
+        } else {
+            logger.warning("Intento de login FALLIDO en REGISTRO con usuario: " + usuario);
+            JOptionPane.showMessageDialog(this,
+                    "Usuario o contraseña incorrectos.",
+                    "Error de autenticación",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**

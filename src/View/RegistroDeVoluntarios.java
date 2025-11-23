@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
+import javax.swing.JOptionPane;
 /**
  *
  * @author angel
@@ -16,7 +16,8 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
      * Creates new form RegistroDeVoluntarios
      */
     public RegistroDeVoluntarios() {
-        initComponents();
+       initComponents();
+        setLocationRelativeTo(null); // centrar ventan
     }
 
     /**
@@ -35,6 +36,7 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        jTextField5 = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
@@ -56,7 +58,6 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jTextField11 = new javax.swing.JTextField();
         jTextField12 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 100)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(51, 102, 0));
@@ -96,6 +97,12 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
 
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Codigo de la donación:");
+
+        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField5ActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -235,11 +242,11 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(223, 223, 223)
-                        .addComponent(jButton12))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton11)))
+                        .addComponent(jButton11))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(215, 215, 215)
+                        .addComponent(jButton12)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -277,40 +284,25 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addGap(36, 36, 36)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                 .addComponent(jButton12)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
                 .addComponent(jButton11)
                 .addContainerGap())
         );
-
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 551, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(293, 293, 293)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(186, Short.MAX_VALUE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(198, 198, 198)))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -325,7 +317,8 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
+      this.dispose();
+        new Menu().setVisible(true);
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -353,7 +346,91 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
+        String nombreCompleto = jTextField3.getText().trim();
+        String codigoVoluntario = jTextField4.getText().trim();
+        String telefono = jTextField6.getText().trim();
+        String dni = jTextField7.getText().trim();
+        String edadStr = jTextField12.getText().trim();
+        String correo = jTextField11.getText().trim();
+        String tarea = jTextField10.getText().trim();
+
+        // Validar campos vacíos
+        if (nombreCompleto.isEmpty() || codigoVoluntario.isEmpty()
+                || telefono.isEmpty() || dni.isEmpty()
+                || edadStr.isEmpty() || correo.isEmpty()
+                || tarea.isEmpty()) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Completa todos los campos antes de registrar al voluntario.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Validar edad
+        int edad;
+        try {
+            edad = Integer.parseInt(edadStr);
+            if (edad <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "La edad debe ser un número entero positivo.",
+                    "Edad inválida",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validar que teléfono y DNI sean numéricos
+        if (!telefono.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this,
+                    "El número de teléfono solo debe contener dígitos.",
+                    "Teléfono inválido",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!dni.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this,
+                    "El DNI solo debe contener dígitos.",
+                    "DNI inválido",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validación sencilla de correo
+        if (!correo.contains("@") || !correo.contains(".")) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingresa un correo electrónico válido.",
+                    "Correo inválido",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Aquí, en el futuro, se llamará al Controller/Service para guardar el voluntario
+        logger.info("Voluntario registrado (simulación): "
+                + "Nombre=" + nombreCompleto
+                + ", Código=" + codigoVoluntario
+                + ", Teléfono=" + telefono
+                + ", DNI=" + dni
+                + ", Edad=" + edad
+                + ", Correo=" + correo
+                + ", Tarea=" + tarea);
+
+        JOptionPane.showMessageDialog(this,
+                "Voluntario registrado y asignado correctamente (simulación).",
+                "Éxito",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        // Si quieres, puedes limpiar los campos después:
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField6.setText("");
+        jTextField7.setText("");
+        jTextField12.setText("");
+        jTextField11.setText("");
+        jTextField10.setText("");
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed

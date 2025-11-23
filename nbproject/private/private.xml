@@ -3,54 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/Registro.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/Envio.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/Menu.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/Visualización.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/RegistroController.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/ListaController.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/EnvioController.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/loginRegistroDeVoluntarios.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/loginVisualizacion.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/LoginEnvio.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/loginRegistro.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/RegistroDeVoluntarios.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/VentanaMenuPrincipal.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/VentanaLoginRegistro.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/VentanaRegistroDonacion.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Patrones/AdaptadorDonacionesTXT.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Model/Donacion.java</file>
-=======
->>>>>>> Stashed changes
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/poo2/POO2.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Controller/EnvioController.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/Visualización.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Controller/ListaController.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/loginVisualizacion.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/loginRegistroDeVoluntarios.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/loginRegistro.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/RegistroDeVoluntarios.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/Registro.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/LoginEnvio.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/Envio.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/Menu.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Structure/TablaHashDonaciones.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Patrones/AdaptadorDonacionesTXT.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Model/Donacion.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Model/TipoDonacion.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Structure/FuenteDatosDonaciones.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Patrones/DonacionFactory.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/Patrones/SistemaFacade.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/VentanaRegistroDonacion.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/VentanaLoginRegistro.java</file>
-            <file>file:/D:/descargas/POO2_PROYECTOFINAL/src/View/VentanaMenuPrincipal.java</file>
-<<<<<<< Updated upstream
-=======
->>>>>>> e7248348efdceb30598bade9c4a7992868b92dd3
->>>>>>> Stashed changes
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/poo2/POO2.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/MenuLoginController.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/InventarioController.java</file>
         </group>
     </open-files>
 </project-private>

@@ -3,11 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
-/**
- *
- * @author USUARIO
- */
+import javax.swing.JOptionPane;
 public class Registro extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Registro.class.getName());
@@ -16,7 +12,8 @@ public class Registro extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public Registro() {
-        initComponents();
+       initComponents();
+        setLocationRelativeTo(null); // centrar ventana
     }
 
     /**
@@ -310,15 +307,62 @@ public class Registro extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+     String donante = jTextField5.getText().trim();
+        String descripcion = jTextField1.getText().trim();
+        String fecha = jTextField2.getText().trim();
+        String cantidadStr = jTextField3.getText().trim();
+        String codigo = jTextField4.getText().trim();
+
+        if (donante.isEmpty() || descripcion.isEmpty() || fecha.isEmpty()
+                || cantidadStr.isEmpty() || codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Completa todos los campos antes de agregar.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "La cantidad debe ser un número entero positivo.",
+                    "Cantidad inválida",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Aquí en el futuro se llamará al Controller/Service para registrar la donación
+        logger.info("Donación agregada (en memoria / simulada): "
+                + "Donante=" + donante
+                + ", Desc=" + descripcion
+                + ", Fecha=" + fecha
+                + ", Cantidad=" + cantidad
+                + ", Código=" + codigo);
+
+        JOptionPane.showMessageDialog(this,
+                "Donación agregada correctamente (simulación).",
+                "Éxito",
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+         // En una siguiente etapa se conectará con repositorio/archivo/BD
+        logger.info("Simulación de guardado de donación.");
+        JOptionPane.showMessageDialog(this,
+                "Datos guardados correctamente (simulación).\n" +
+                "Más adelante se conectará con el repositorio real.",
+                "Guardado",
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+         this.dispose();                 // cierra esta ventana
+        new Menu().setVisible(true);    // abre el menú principal
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed

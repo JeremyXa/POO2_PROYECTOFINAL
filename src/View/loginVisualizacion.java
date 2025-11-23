@@ -3,20 +3,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
+import javax.swing.JOptionPane;
 /**
  *
  * @author angel
  */
 public class loginVisualizacion extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(loginVisualizacion.class.getName());
+      private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(loginVisualizacion.class.getName());
+
+    // Credenciales simples para el módulo VISUALIZACIÓN
+    private static final String USERNAME = "visualizacion";
+    private static final String PASSWORD = "1234";
 
     /**
      * Creates new form loginVisualizacion
      */
     public loginVisualizacion() {
         initComponents();
+        setLocationRelativeTo(null); // Centrar ventana
     }
 
     /**
@@ -182,11 +188,13 @@ public class loginVisualizacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+         // Enter en usuario -> pasar a contraseña
+        jTextField2.requestFocus();
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
+         // Enter en contraseña -> intentar login
+        jButton10ActionPerformed(evt);
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -198,11 +206,33 @@ public class loginVisualizacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
+           this.dispose();
+        new Menu().setVisible(true);
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
+         String usuario = jTextField1.getText().trim();
+        String contrasena = jTextField2.getText().trim();
+
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Completa Usuario y Contraseña.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (USERNAME.equals(usuario) && PASSWORD.equals(contrasena)) {
+            logger.info("Acceso CORRECTO al módulo VISUALIZACIÓN. Usuario: " + usuario);
+            new Visualización().setVisible(true);
+            this.dispose();
+        } else {
+            logger.warning("Intento de login FALLIDO en VISUALIZACIÓN con usuario: " + usuario);
+            JOptionPane.showMessageDialog(this,
+                    "Usuario o contraseña incorrectos.",
+                    "Error de autenticación",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     /**

@@ -3,20 +3,62 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author USUARIO
  */
 public class Visualización extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Visualización.class.getName());
-
+    private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(Visualización.class.getName());
+ // Modelo de la tabla
+    private DefaultTableModel tableModel;
     /**
      * Creates new form Visualización
      */
     public Visualización() {
-        initComponents();
+     initComponents();
+        setLocationRelativeTo(null); // centrar ventana
+        configurarTabla();
+        configurarSeleccionTabla();
+        // Opcional: datos de prueba
+        cargarDatosEjemplo();
+    }
+private void configurarTabla() {
+        tableModel = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Código", "Donante", "Descripción", "Cantidad"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // No permitir edición directa en la tabla
+                return false;
+            }
+        };
+        jTable1.setModel(tableModel);
+    }
+
+    private void configurarSeleccionTabla() {
+        jTable1.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int fila = jTable1.getSelectedRow();
+                if (fila >= 0 && tableModel.getRowCount() > fila) {
+                    Object descripcion = tableModel.getValueAt(fila, 2); // columna Descripción
+                    Object cantidad = tableModel.getValueAt(fila, 3);    // columna Cantidad
+                    jTextField4.setText(descripcion != null ? descripcion.toString() : "");
+                    jTextField5.setText(cantidad != null ? cantidad.toString() : "");
+                }
+            }
+        });
+    }
+
+    // Solo para que puedas probar la pantalla
+    private void cargarDatosEjemplo() {
+        tableModel.addRow(new Object[]{"A1", "Juan Pérez", "Alimentos no perecibles", 5});
+        tableModel.addRow(new Object[]{"R2", "María López", "Ropa de abrigo", 12});
+        tableModel.addRow(new Object[]{"M3", "Carlos Díaz", "Muebles para comedor", 1});
     }
 
     /**
@@ -122,6 +164,11 @@ public class Visualización extends javax.swing.JFrame {
 
         jButton8.setBackground(new java.awt.Color(0, 0, 0));
         jButton8.setText("Modificar");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
@@ -162,6 +209,11 @@ public class Visualización extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(0, 0, 0));
         jButton1.setText("Buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jTable1.setBackground(new java.awt.Color(0, 0, 0));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -200,6 +252,11 @@ public class Visualización extends javax.swing.JFrame {
 
         jButton9.setBackground(new java.awt.Color(0, 0, 0));
         jButton9.setText("Buscar");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -347,7 +404,25 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        int fila = jTable1.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Selecciona una donación en la tabla para eliminar.",
+                    "Sin selección",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Estás seguro de eliminar la donación seleccionada?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            tableModel.removeRow(fila);
+            jTextField4.setText("");
+            jTextField5.setText("");
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -363,7 +438,20 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+         int filas = tableModel.getRowCount();
+        logger.info("Guardando " + filas + " donaciones (simulación).");
+        for (int i = 0; i < filas; i++) {
+            logger.info("Donación " + i + ": "
+                    + "Código=" + tableModel.getValueAt(i, 0)
+                    + ", Donante=" + tableModel.getValueAt(i, 1)
+                    + ", Descripción=" + tableModel.getValueAt(i, 2)
+                    + ", Cantidad=" + tableModel.getValueAt(i, 3));
+        }
+
+        JOptionPane.showMessageDialog(this,
+                "Cambios guardados (simulación).",
+                "Guardar",
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -375,12 +463,119 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField5ActionPerformed
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+        new Menu().setVisible(true);
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField7ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       String codigo = jTextField6.getText().trim();
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingresa el código de la donación.",
+                    "Búsqueda",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int filaEncontrada = -1;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            Object valor = tableModel.getValueAt(i, 0); // columna Código
+            if (valor != null && codigo.equalsIgnoreCase(valor.toString())) {
+                filaEncontrada = i;
+                break;
+            }
+        }
+
+        if (filaEncontrada == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "No se encontró ninguna donación con código: " + codigo,
+                    "Sin resultados",
+                    JOptionPane.INFORMATION_MESSAGE);
+            jTable1.clearSelection();
+        } else {
+            jTable1.setRowSelectionInterval(filaEncontrada, filaEncontrada);
+            jTable1.scrollRectToVisible(jTable1.getCellRect(filaEncontrada, 0, true));
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    String donante = jTextField7.getText().trim();
+        if (donante.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingresa el nombre del donante.",
+                    "Búsqueda",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int filaEncontrada = -1;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            Object valor = tableModel.getValueAt(i, 1); // columna Donante
+            if (valor != null && valor.toString().toLowerCase().contains(donante.toLowerCase())) {
+                filaEncontrada = i;
+                break;
+            }
+        }
+
+        if (filaEncontrada == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "No se encontró ninguna donación para el donante: " + donante,
+                    "Sin resultados",
+                    JOptionPane.INFORMATION_MESSAGE);
+            jTable1.clearSelection();
+        } else {
+            jTable1.setRowSelectionInterval(filaEncontrada, filaEncontrada);
+            jTable1.scrollRectToVisible(jTable1.getCellRect(filaEncontrada, 0, true));
+        }
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+          int fila = jTable1.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Selecciona una donación en la tabla para modificar.",
+                    "Sin selección",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String descripcion = jTextField4.getText().trim();
+        String cantidadStr = jTextField5.getText().trim();
+
+        if (descripcion.isEmpty() || cantidadStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Completa la descripción y la cantidad.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "La cantidad debe ser un número entero positivo.",
+                    "Cantidad inválida",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        tableModel.setValueAt(descripcion, fila, 2); // Descripción
+        tableModel.setValueAt(cantidad, fila, 3);     // Cantidad
+
+        JOptionPane.showMessageDialog(this,
+                "Donación modificada correctamente.",
+                "Modificación",
+                JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     /**
      * @param args the command line arguments

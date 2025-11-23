@@ -4,21 +4,277 @@
  */
 package View;
 
-/**
- *
- * @author angel
- */
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 public class Envio extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Envio.class.getName());
 
-    /**
-     * Creates new form Envio
-     */
+    // === RUTAS DE ARCHIVOS ===
+    private static final String BASE_PATH = "C:\\Users\\USUARIO\\Documents\\PYPOOO2\\";
+    private static final String DONACIONES_FILE = BASE_PATH + "donaciones.txt";
+    // Constancias generadas por el área de envío
+    private static final String CONSTANCIAS_FILE = BASE_PATH + "constancias_envio.txt";
+    // Opcional: guardar solo el contenido del paquete
+    private static final String PAQUETES_FILE = BASE_PATH + "paquetes_envio.txt";
+
+    // Modelos para las tablas
+    private DefaultTableModel modeloDonaciones; // Tabla de resultados de búsqueda (jTable3)
+    private DefaultTableModel modeloPaquete;    // Tabla de donaciones del paquete (jTable2)
+    
+    
+    
     public Envio() {
         initComponents();
+        inicializarModelosTablas();
+        asegurarCarpetaBase();
+    }
+private void inicializarModelosTablas() {
+        // Tabla de búsqueda (izquierda)
+        modeloDonaciones = new DefaultTableModel(
+                new Object[]{"Código", "Donante", "Descripción", "Fecha ingreso", "Cantidad"}, 0
+        );
+        jTable3.setModel(modeloDonaciones);
+
+        // Tabla del paquete (derecha)
+        modeloPaquete = new DefaultTableModel(
+                new Object[]{"Código", "Donante", "Descripción", "Fecha ingreso", "Cantidad"}, 0
+        );
+        jTable2.setModel(modeloPaquete);
     }
 
+
+   private void asegurarCarpetaBase() {
+        File base = new File(BASE_PATH);
+        if (!base.exists()) {
+            base.mkdirs();
+        }
+    }
+   
+   private void buscarDonaciones() {
+        String codigoFiltro = jTextField6.getText().trim();
+        String donanteFiltro = jTextField4.getText().trim();
+
+        if (codigoFiltro.isEmpty() && donanteFiltro.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingrese al menos el código o el nombre del donante para buscar.",
+                    "Datos insuficientes",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+   
+   modeloDonaciones.setRowCount(0); // limpiar tabla
+
+        File archivoDonaciones = new File(DONACIONES_FILE);
+        if (!archivoDonaciones.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    "Aún no existe el archivo de donaciones.\nRegistre donaciones primero.",
+                    "Archivo no encontrado",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoDonaciones))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (linea.trim().isEmpty()) {
+                    continue;
+                }
+                // Formato esperado: codigo;donante;descripcion;fecha;cantidad
+                String[] partes = linea.split(";");
+                if (partes.length < 5) {
+                    continue; // línea mal formada
+                }
+
+                String codigo = partes[0];
+                String donante = partes[1];
+                String descripcion = partes[2];
+                String fecha = partes[3];
+                String cantidad = partes[4];
+
+                boolean coincide = true;
+
+                if (!codigoFiltro.isEmpty() && !codigo.equalsIgnoreCase(codigoFiltro)) {
+                    coincide = false;
+                }
+                if (!donanteFiltro.isEmpty() && !donante.equalsIgnoreCase(donanteFiltro)) {
+                    coincide = false;
+                }
+
+                if (coincide) {
+                    modeloDonaciones.addRow(new Object[]{
+                        codigo, donante, descripcion, fecha, cantidad
+                    });
+                }
+            }
+
+            if (modeloDonaciones.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this,
+                        "No se encontraron donaciones con los datos ingresados.",
+                        "Sin resultados",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Error al leer el archivo de donaciones", ex);
+            JOptionPane.showMessageDialog(this,
+                    "Error al leer el archivo de donaciones:\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Agrega la donación seleccionada en la tabla de búsqueda (jTable3) a la
+     * tabla de paquete (jTable2).
+     */
+    private void agregarDonacionAPaquete() {
+        int fila = jTable3.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione una donación en la tabla de resultados para agregar al paquete.",
+                    "Sin selección",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Object[] datos = new Object[modeloDonaciones.getColumnCount()];
+        for (int i = 0; i < datos.length; i++) {
+            datos[i] = modeloDonaciones.getValueAt(fila, i);
+        }
+
+        modeloPaquete.addRow(datos);
+    }
+
+    /**
+     * Guarda solo el contenido actual del paquete en un archivo TXT
+     * (paquetes_envio.txt).
+     */
+    private void guardarPaqueteEnArchivo() {
+        if (modeloPaquete.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay donaciones en el paquete para guardar.",
+                    "Paquete vacío",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        asegurarCarpetaBase();
+
+        try (FileWriter fw = new FileWriter(PAQUETES_FILE, true)) {
+            fw.write("PAQUETE DE DONACIONES\n");
+            for (int i = 0; i < modeloPaquete.getRowCount(); i++) {
+                fw.write(modeloPaquete.getValueAt(i, 0) + ";" // código
+                        + modeloPaquete.getValueAt(i, 1) + ";" // donante
+                        + modeloPaquete.getValueAt(i, 2) + ";" // desc
+                        + modeloPaquete.getValueAt(i, 3) + ";" // fecha
+                        + modeloPaquete.getValueAt(i, 4)       // cantidad
+                        + System.lineSeparator());
+            }
+            fw.write("-----------------------------------------------------\n");
+            JOptionPane.showMessageDialog(this,
+                    "Paquete guardado correctamente en:\n" + PAQUETES_FILE,
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Error al guardar el paquete", ex);
+            JOptionPane.showMessageDialog(this,
+                    "Error al guardar el paquete:\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Genera la constancia de envío con la información del paquete, del
+     * destinatario/destino y del conductor.
+     */
+    private void generarConstanciaEnvio() {
+        if (modeloPaquete.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay donaciones en el paquete para generar constancia.",
+                    "Paquete vacío",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Ojo: en la interfaz original hay etiqueta "Introducir destinatario" (jLabel3),
+        // pero no tiene un JTextField propio.
+        // Usaremos:
+        //  - jTextField5 como destino/destinatario de envío
+        //  - jTextField3 como nombre de conductor
+
+        String destinoODestinatario = jTextField5.getText().trim();
+        String conductor = jTextField3.getText().trim();
+
+        if (destinoODestinatario.isEmpty() || conductor.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingrese el destino/destinatario y el nombre del conductor.",
+                    "Datos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        asegurarCarpetaBase();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("CONSTANCIA DE ENVÍO").append(System.lineSeparator());
+        sb.append("Fecha y hora: ").append(java.time.LocalDateTime.now()).append(System.lineSeparator());
+        sb.append("Destino/Destinatario: ").append(destinoODestinatario).append(System.lineSeparator());
+        sb.append("Conductor: ").append(conductor).append(System.lineSeparator());
+        sb.append("Donaciones incluidas:").append(System.lineSeparator());
+
+        for (int i = 0; i < modeloPaquete.getRowCount(); i++) {
+            sb.append("- Código: ").append(modeloPaquete.getValueAt(i, 0))
+                    .append(", Donante: ").append(modeloPaquete.getValueAt(i, 1))
+                    .append(", Descripción: ").append(modeloPaquete.getValueAt(i, 2))
+                    .append(", Fecha: ").append(modeloPaquete.getValueAt(i, 3))
+                    .append(", Cantidad: ").append(modeloPaquete.getValueAt(i, 4))
+                    .append(System.lineSeparator());
+        }
+        sb.append("-----------------------------------------------------").append(System.lineSeparator());
+
+        try (FileWriter fw = new FileWriter(CONSTANCIAS_FILE, true)) {
+            fw.write(sb.toString());
+            JOptionPane.showMessageDialog(this,
+                    "Constancia generada y guardada correctamente en:\n" + CONSTANCIAS_FILE,
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Error al guardar la constancia de envío", ex);
+            JOptionPane.showMessageDialog(this,
+                    "Error al guardar la constancia:\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void volverAlMenu() {
+        this.dispose();
+        new Menu().setVisible(true);
+    }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -341,16 +597,22 @@ public class Envio extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
+    
+    
+    
+    
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+volverAlMenu();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+        guardarPaqueteEnArchivo();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        buscarDonaciones();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -358,7 +620,7 @@ public class Envio extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+     generarConstanciaEnvio();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
@@ -374,7 +636,7 @@ public class Envio extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+      agregarDonacionAPaquete();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

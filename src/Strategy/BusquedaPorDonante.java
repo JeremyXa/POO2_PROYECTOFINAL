@@ -15,7 +15,7 @@ public class BusquedaPorDonante implements BusquedaDonacionStrategy {
             if (d.getDonante().getNombre().equalsIgnoreCase(nombreDonante)) {
                 res.add(d);
             }
-        }
+        }s
         return res;
     }
 }

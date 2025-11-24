@@ -5,15 +5,13 @@
 package View;
 import adra.core.AdraController;
 import adra.core.DependencyBuilder;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 
-import adra.core.AdraController;
-import adra.core.DependencyBuilder;
-import View.Menu;
 public class RegistroDeVoluntarios extends javax.swing.JFrame {
     
    
@@ -24,31 +22,31 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     private static final String BASE_DIR = "C:\\Users\\USUARIO\\Documents\\PYPOOO2";
     private static final String VOLUNTARIOS_FILE = BASE_DIR + "\\voluntarios.txt";
 
-    // Controlador compartido
+    // Controlador compartido y referencia al menú
     private final AdraController controller;
-     private final Menu menuParent;
-    /**
-     * Constructor principal (usar desde el Menu)
-     */
-     public RegistroDeVoluntarios(AdraController controller, Menu menuParent) {
+    private final Menu menuParent;
+
+    // ========================= CONSTRUCTORES ===================================
+
+    // Constructor principal (desde el menú)
+    public RegistroDeVoluntarios(AdraController controller, Menu menuParent) {
         this.controller = controller;
         this.menuParent = menuParent;
         initComponents();
         setLocationRelativeTo(null);
     }
-    
 
-    /**
-     * Constructor sin parámetros (para pruebas / ejecutar directo)
-     */
+    // Solo controller
     public RegistroDeVoluntarios(AdraController controller) {
         this(controller, null);
     }
 
+    // Para pruebas / ejecutar directo
     public RegistroDeVoluntarios() {
         this(DependencyBuilder.buildController(), null);
     }
-    // =======================================================================
+
+    // ====================== LÓGICA DE ARCHIVO ==================================
 
     private void guardarVoluntarioEnArchivo(String codigo,
                                             String nombre,
@@ -100,6 +98,7 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
         jTextField11.setText(""); // correo
         jTextField10.setText(""); // tarea
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -387,6 +386,54 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+private void registrarYAsignarVoluntario() {
+    String nombre   = jTextField3.getText().trim();
+    String codigo   = jTextField4.getText().trim();
+    String telefono = jTextField6.getText().trim();
+    String dni      = jTextField7.getText().trim();
+    String edadStr  = jTextField12.getText().trim();
+    String correo   = jTextField11.getText().trim();
+    String tarea    = jTextField10.getText().trim();
+
+    // Validar campos
+    if (nombre.isEmpty() || codigo.isEmpty() || telefono.isEmpty()
+            || dni.isEmpty() || edadStr.isEmpty()
+            || correo.isEmpty() || tarea.isEmpty()) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Completa todos los campos antes de registrar.",
+                "Campos incompletos",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    int edad;
+    try {
+        edad = Integer.parseInt(edadStr);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(
+                this,
+                "La edad debe ser un número entero.",
+                "Error de formato",
+                JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    // Guardar en TXT (se agrega una nueva línea cada vez)
+    guardarVoluntarioEnArchivo(codigo, nombre, telefono, dni, edad, correo, tarea);
+
+    JOptionPane.showMessageDialog(
+            this,
+            "Voluntario registrado y asignado correctamente.",
+            "Éxito",
+            JOptionPane.INFORMATION_MESSAGE
+    );
+
+    // Limpiar para seguir registrando más
+    limpiarFormulario();
+}
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
@@ -397,12 +444,12 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-      if (menuParent != null) {
-        menuParent.setVisible(true);
-    } else {
-        new Menu(controller).setVisible(true);
-    }
-    dispose();
+   if (menuParent != null) {
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
+        dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -430,7 +477,7 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-
+registrarYAsignarVoluntario();
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
@@ -446,60 +493,15 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField11ActionPerformed
 
     private void jTextField12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField12ActionPerformed
-         // Registrar y asignar voluntario -> guardar en TXT y limpiar
+             // Registrar y asignar voluntario -> guardar en TXT y limpiar
 
-        String nombre = jTextField3.getText().trim();
-        String codigo = jTextField4.getText().trim();
-        String telefono = jTextField6.getText().trim();
-        String dni = jTextField7.getText().trim();
-        String edadStr = jTextField12.getText().trim();
-        String correo = jTextField11.getText().trim();
-        String tarea = jTextField10.getText().trim();
-
-        if (nombre.isEmpty() || codigo.isEmpty() || telefono.isEmpty()
-                || dni.isEmpty() || edadStr.isEmpty()
-                || correo.isEmpty() || tarea.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Completa todos los campos antes de registrar.",
-                    "Campos incompletos",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-
-        int edad;
-        try {
-            edad = Integer.parseInt(edadStr);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "La edad debe ser un número entero.",
-                    "Error de formato",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
-        // Guardar en archivo
-        guardarVoluntarioEnArchivo(codigo, nombre, telefono, dni, edad, correo, tarea);
-
-        JOptionPane.showMessageDialog(
-                this,
-                "Voluntario registrado y asignado correctamente.",
-                "Éxito",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-
-        // Limpiar para permitir otro registro
-        limpiarFormulario();
+       registrarYAsignarVoluntario();
     }//GEN-LAST:event_jTextField12ActionPerformed
 
    /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -511,7 +513,6 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new RegistroDeVoluntarios().setVisible(true));
     }
 

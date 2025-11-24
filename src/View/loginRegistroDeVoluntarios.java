@@ -4,21 +4,31 @@
  */
 package View;
 
-/**
- *
- * @author angel
- */
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import javax.swing.JOptionPane;
 public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(loginRegistroDeVoluntarios.class.getName());
+    private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(loginRegistroDeVoluntarios.class.getName());
 
-    /**
-     * Creates new form loginRegistroDeVoluntarios
-     */
-    public loginRegistroDeVoluntarios() {
+    private final AdraController controller;
+    private final Menu menuParent;
+
+    public loginRegistroDeVoluntarios(AdraController controller, Menu menuParent) {
+        this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
+        setLocationRelativeTo(null);
     }
 
+    public loginRegistroDeVoluntarios(AdraController controller) {
+        this(controller, null);
+    }
+
+    public loginRegistroDeVoluntarios() {
+        this(DependencyBuilder.buildController(), null);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -184,12 +194,49 @@ public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+       if (menuParent != null) {
+            menuParent.setLocationRelativeTo(this);
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
+        dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+         String usuario = jTextField1.getText().trim();
+        String cargo   = jTextField3.getText().trim();
+        String pass    = jTextField2.getText().trim();
+
+        if (usuario.isEmpty() || cargo.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Complete usuario, cargo y contraseña.",
+                    "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this,
+                "Acceso concedido al módulo de Voluntarios.",
+                "Información", JOptionPane.INFORMATION_MESSAGE);
+
+        RegistroDeVoluntarios regVol = new RegistroDeVoluntarios(controller, menuParent);
+        regVol.setLocationRelativeTo(this);
+        regVol.setVisible(true);
+        dispose();
+    
     }//GEN-LAST:event_jButton7ActionPerformed
+ // Valida usuario + cargo + contraseña de personal administrativo
+    private boolean credencialesAdministrativoValidas(String usuario,
+                                                      String cargo,
+                                                      String contrasena) {
+        // Ejemplo:
+        // usuario: adminvol
+        // cargo: administrativo
+        // contraseña: 1234
+        return "adminvol".equalsIgnoreCase(usuario)
+                && "administrativo".equalsIgnoreCase(cargo)
+                && "1234".equals(contrasena);
+    }
 
     /**
      * @param args the command line arguments

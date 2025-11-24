@@ -8,28 +8,26 @@ import adra.core.DependencyBuilder;
 import javax.swing.JOptionPane;
 public class LoginEnvio extends javax.swing.JFrame {
     
-   private static final java.util.logging.Logger logger =
+private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(LoginEnvio.class.getName());
 
-    // Controller compartido
     private final AdraController controller;
+    private final Menu menuParent;
 
-    /**
-     * Constructor principal: usar este cuando se llame desde el menú
-     */
-    public LoginEnvio(AdraController controller) {
+    public LoginEnvio(AdraController controller, Menu menuParent) {
         this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
         setLocationRelativeTo(null);
     }
 
-    /**
-     * Constructor sin parámetros (solo para previsualizar en NetBeans)
-     */
-    public LoginEnvio() {
-        this(DependencyBuilder.buildController());
+    public LoginEnvio(AdraController controller) {
+        this(controller, null);
     }
 
+    public LoginEnvio() {
+        this(DependencyBuilder.buildController(), null);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -195,13 +193,9 @@ public class LoginEnvio extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        if (controller == null) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Controller no configurado.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+      if (controller == null) {
+            JOptionPane.showMessageDialog(this, "Controller no configurado.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -209,40 +203,36 @@ public class LoginEnvio extends javax.swing.JFrame {
         String contrasena = jTextField2.getText().trim();
 
         if (usuario.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Ingrese usuario y contraseña.",
-                    "Validación",
-                    JOptionPane.WARNING_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, "Ingrese usuario y contraseña.",
+                    "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Aquí podrías validar contra una lista de usuarios/roles, etc.
-        JOptionPane.showMessageDialog(
-                this,
+        JOptionPane.showMessageDialog(this,
                 "Acceso concedido al módulo de Envíos.",
-                "Información",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+                "Información", JOptionPane.INFORMATION_MESSAGE);
 
-        Envio envio = new Envio(controller); // asegúrate que Envio tenga este constructor
+        Envio envio = new Envio(controller, menuParent);
         envio.setLocationRelativeTo(this);
         envio.setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-         Menu menu = new Menu(controller);
-        menu.setLocationRelativeTo(this);
-        menu.setVisible(true);
+       if (menuParent != null) {
+            menuParent.setLocationRelativeTo(this);
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
         dispose();
+            
     }//GEN-LAST:event_jButton8ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -259,6 +249,7 @@ public class LoginEnvio extends javax.swing.JFrame {
             new LoginEnvio(controller).setVisible(true);
         });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton7;

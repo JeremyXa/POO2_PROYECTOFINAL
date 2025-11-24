@@ -6,29 +6,30 @@ package View;
 
 import adra.core.AdraController;
 import adra.core.DependencyBuilder;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 public class loginVisualizacion extends javax.swing.JFrame {
     
-     private static final java.util.logging.Logger logger =
+ 
+    private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(loginVisualizacion.class.getName());
 
-    // ==== NUEVO: referencia al controlador ====
     private final AdraController controller;
+    private final Menu menuParent;
 
-    /**
-     * Constructor principal: se usa cuando ya tienes un controlador creado
-     */
-    public loginVisualizacion(AdraController controller) {
+    public loginVisualizacion(AdraController controller, Menu menuParent) {
         this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
+        setLocationRelativeTo(null);
     }
 
-    /**
-     * Constructor sin parámetros: útil para ejecutar directo o previsualizar en NetBeans.
-     * Internamente crea el AdraController con DependencyBuilder.
-     */
+    public loginVisualizacion(AdraController controller) {
+        this(controller, null);
+    }
+
     public loginVisualizacion() {
-        this(DependencyBuilder.buildController());
+        this(DependencyBuilder.buildController(), null);
     }
 
     @SuppressWarnings("unchecked")
@@ -205,30 +206,29 @@ public class loginVisualizacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-      this.dispose();
-        new Menu(controller).setVisible(true);
+        if (menuParent != null) {
+            menuParent.setLocationRelativeTo(this);
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
+        dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-           String usuario = jTextField1.getText().trim();
+              String usuario = jTextField1.getText().trim();
         String contraseña = jTextField2.getText().trim();
 
         if (usuario.isEmpty() || contraseña.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Ingrese usuario y contraseña.",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, "Ingrese usuario y contraseña.",
+                    "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Si quisieras validar algo más fuerte, aquí pones el if.
-        // Por ahora, cualquier usuario/contraseña NO vacíos pueden entrar.
-
-        // Abre la pantalla de Visualización y cierra este login
-        new Visualización(controller).setVisible(true); // asegúrate que Visualización tenga ctor(AdraController)
-        this.dispose();
+        Visualización visual = new Visualización(controller, menuParent);
+        visual.setLocationRelativeTo(this);
+        visual.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
      /**

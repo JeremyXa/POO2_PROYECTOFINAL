@@ -9,27 +9,39 @@ import adra.core.DependencyBuilder;
 import javax.swing.JOptionPane;
 public class loginRegistro extends javax.swing.JFrame {
     
-   private static final java.util.logging.Logger logger =
+  private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(loginRegistro.class.getName());
 
     // Controller compartido
     private final AdraController controller;
+    // Referencia al menú que abrió este login (puede ser null si se abre directo)
+    private final Menu menuParent;
 
     /**
      * Constructor principal: usar este cuando se llame desde el menú
      */
-    public loginRegistro(AdraController controller) {
+    public loginRegistro(AdraController controller, Menu menuParent) {
         this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
         setLocationRelativeTo(null);
+    }
+
+    /**
+     * Constructor alterno (por compatibilidad si en algún lado usan solo controller)
+     */
+    public loginRegistro(AdraController controller) {
+        this(controller, null);
     }
 
     /**
      * Constructor sin parámetros (solo para previsualizar en NetBeans)
      */
     public loginRegistro() {
-        this(DependencyBuilder.buildController());
+        this(DependencyBuilder.buildController(), null);
     }
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -203,14 +215,17 @@ public class loginRegistro extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-     Menu menu = new Menu(controller);
-        menu.setLocationRelativeTo(this);
-        menu.setVisible(true);
+        if (menuParent != null) {
+            menuParent.setLocationRelativeTo(this);
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
         dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-         if (controller == null) {
+            if (controller == null) {
             JOptionPane.showMessageDialog(
                     this,
                     "Controller no configurado.",
@@ -233,25 +248,23 @@ public class loginRegistro extends javax.swing.JFrame {
             return;
         }
 
-        // Aquí podrías agregar validación real (contra archivo, BD, etc.)
-        // Por ahora, si no están vacíos se permite el acceso.
-        JOptionPane.showMessageDialog(
-                this,
-                "Acceso concedido.",
-                "Información",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        // Aquí podrías validar según rol trabajador / admin, etc.
+        JOptionPane.showMessageDialog(this, "Acceso concedido.", "Información",
+                                      JOptionPane.INFORMATION_MESSAGE);
 
-        Registro registro = new Registro(controller);
+        // Ir al formulario de Registro
+        Registro registro = new Registro(controller, menuParent);
         registro.setLocationRelativeTo(this);
         registro.setVisible(true);
         dispose();
+    
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-     public static void main(String args[]) {
+    
+    public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -265,6 +278,7 @@ public class loginRegistro extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(() -> {
             AdraController controller = DependencyBuilder.buildController();
+            // aquí NO hay menuParent, se usa solo para probar
             new loginRegistro(controller).setVisible(true);
         });
     }

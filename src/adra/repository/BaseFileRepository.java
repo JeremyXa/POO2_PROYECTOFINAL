@@ -15,7 +15,12 @@ public abstract class BaseFileRepository {
     }
 
     protected void appendLine(String line) throws IOException {
-        Files.createDirectories(filePath.getParent());
+        // Crear carpeta si no existe (por ejemplo "data")
+        Path parent = filePath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+
         Files.write(
                 filePath,
                 (line + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
@@ -25,14 +30,18 @@ public abstract class BaseFileRepository {
     }
 
     protected List<String> readAllLines() throws IOException {
-        if (Files.notExists(filePath)) {
+        if (!Files.exists(filePath)) {
             return new ArrayList<>();
         }
         return Files.readAllLines(filePath, StandardCharsets.UTF_8);
     }
 
     protected void writeAllLines(List<String> lines) throws IOException {
-        Files.createDirectories(filePath.getParent());
+        Path parent = filePath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+
         Files.write(
                 filePath,
                 lines,
@@ -40,9 +49,5 @@ public abstract class BaseFileRepository {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING
         );
-    }
-
-    protected Path getFilePath() {
-        return filePath;
     }
 }

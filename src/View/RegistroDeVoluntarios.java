@@ -10,6 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
+
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import View.Menu;
 public class RegistroDeVoluntarios extends javax.swing.JFrame {
     
    
@@ -22,23 +26,28 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
 
     // Controlador compartido
     private final AdraController controller;
-
+     private final Menu menuParent;
     /**
      * Constructor principal (usar desde el Menu)
      */
-    public RegistroDeVoluntarios(AdraController controller) {
+     public RegistroDeVoluntarios(AdraController controller, Menu menuParent) {
         this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
-        setLocationRelativeTo(null); // centrar ventana
+        setLocationRelativeTo(null);
     }
+    
 
     /**
      * Constructor sin parámetros (para pruebas / ejecutar directo)
      */
-    public RegistroDeVoluntarios() {
-        this(DependencyBuilder.buildController());
+    public RegistroDeVoluntarios(AdraController controller) {
+        this(controller, null);
     }
 
+    public RegistroDeVoluntarios() {
+        this(DependencyBuilder.buildController(), null);
+    }
     // =======================================================================
 
     private void guardarVoluntarioEnArchivo(String codigo,
@@ -388,8 +397,12 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-     this.dispose();
+      if (menuParent != null) {
+        menuParent.setVisible(true);
+    } else {
         new Menu(controller).setVisible(true);
+    }
+    dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed

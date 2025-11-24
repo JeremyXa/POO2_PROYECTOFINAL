@@ -24,31 +24,40 @@ public class Visualización extends javax.swing.JFrame {
     private static final String BASE_DIR = "C:\\Users\\USUARIO\\Documents\\PYPOOO2";
     private static final String DONACIONES_FILE = BASE_DIR + "\\donaciones.txt";
 
-    // ==== Controlador (aunque aquí casi no lo usamos, se pasa desde el login) ====
+    // ==== Controlador y referencia al menú ====
     private final AdraController controller;
+    private final Menu menuParent;
 
     // Modelo de la tabla
     private DefaultTableModel tableModel;
 
-    // ==== CONSTRUCTORES ========================================================
+    // ==== CONSTRUCTORES =====================================================
 
     /**
      * Constructor principal usado desde loginVisualizacion
      */
-    public Visualización(AdraController controller) {
+    public Visualización(AdraController controller, Menu menuParent) {
         this.controller = controller;
+        this.menuParent = menuParent;
         initComponents();
-        setLocationRelativeTo(null); // centrar ventana
+        setLocationRelativeTo(null);   // centrar ventana
         configurarTabla();
         configurarSeleccionTabla();
         cargarDonacionesDesdeArchivo();
     }
 
     /**
-     * Constructor sin parámetros: útil para pruebas o ejecución directa
+     * Si solo te pasan el controller (sin menú)
+     */
+    public Visualización(AdraController controller) {
+        this(controller, null);        // reusa el constructor principal
+    }
+
+    /**
+     * Constructor sin parámetros (para pruebas / NetBeans)
      */
     public Visualización() {
-        this(DependencyBuilder.buildController());
+        this(DependencyBuilder.buildController(), null);
     }
 
     // ==== CONFIGURACIÓN DE TABLA Y SELECCIÓN ===================================
@@ -544,9 +553,13 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // Salir de esta pantalla: volver al menú principal
-        this.dispose();
+         if (menuParent != null) {
+        menuParent.setVisible(true);
+    } else {
+        // Fallback por si se abrió sin menú
         new Menu(controller).setVisible(true);
+    }
+    dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed

@@ -187,65 +187,123 @@ private static final java.util.logging.Logger logger =
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      if (controller == null) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Controller no configurado.",
-                    "Error",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        Envio envio = new Envio(controller);
-        envio.setLocationRelativeTo(this);
-        envio.setVisible(true);
+
+        
+     if (controller == null) {
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Controller no configurado.",
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    new LoginEnvio(controller, this).setVisible(true);
+    this.setVisible(false);
+        
+        
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+          
+        
          if (controller == null) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Controller no configurado.",
-                    "Error",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        Registro registro = new Registro(controller);
-        registro.setLocationRelativeTo(this);
-        registro.setVisible(true);
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Controller no configurado.",
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+    
+    // Abrir LOGIN de REGISTRO y ocultar el menú
+    new loginRegistro(controller, this).setVisible(true);
+    this.setVisible(false);
+    
+    
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-   if (controller == null) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Controller no configurado.",
-                    "Error",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        Visualización visualizacion = new Visualización(controller);
-        visualizacion.setLocationRelativeTo(this);
-        visualizacion.setVisible(true);
+
+       
+        
+        if (controller == null) {
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Controller no configurado.",
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    new loginVisualizacion(controller, this).setVisible(true);
+    this.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-          if (controller == null) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Controller no configurado.",
-                    "Error",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        RegistroDeVoluntarios regVol = new RegistroDeVoluntarios(controller);
-        regVol.setLocationRelativeTo(this);
-        regVol.setVisible(true);
+
+         
+        
+        
+        
+        if (controller == null) {
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Controller no configurado.",
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    new loginRegistroDeVoluntarios(controller, this).setVisible(true);
+    this.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         dispose();  
     }//GEN-LAST:event_jButton4ActionPerformed

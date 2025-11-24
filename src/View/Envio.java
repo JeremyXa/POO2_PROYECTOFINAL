@@ -43,8 +43,29 @@ public class Envio extends javax.swing.JFrame {
      * NO usarlo en la ejecución real.
      */
     public Envio() {
-        this(null);
+       this(DependencyBuilder.buildController());
     }
+    
+    public Envio(AdraController controller, Menu menuParent) {
+        // De momento solo reutilizamos la lógica del constructor anterior.
+        // Si luego quieres usar menuParent para volver al mismo menú,
+        // aquí lo puedes guardar en un campo.
+        this(controller);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     // ================== CONFIGURACIÓN DE TABLAS ==================
 

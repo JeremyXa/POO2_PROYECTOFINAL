@@ -13,8 +13,33 @@
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/loginRegistro.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/View/RegistroDeVoluntarios.java</file>
             <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/poo2/POO2.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/MenuLoginController.java</file>
-            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/Controller/InventarioController.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/model/Donacion.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/model/TipoDonacion.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/model/Voluntario.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/model/Envio.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/EnvioRepository.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/VoluntarioFileRepositoryAdapter.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/EnvioFileRepositoryAdapter.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/observer/LoggerNotificationObserver.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/factory/DonacionFactory.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/auth/AuthStrategy.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/auth/RegistroAuthStrategy.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/auth/VisualizacionAuthStrategy.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/auth/EnvioAuthStrategy.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/auth/VoluntarioSupervisorAuthStrategy.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/dto/ResultadoOperacion.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/util/EnvioConstanciaFormatter.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/service/DonacionService.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/service/VoluntarioService.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/service/EnvioService.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/core/AdraController.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/core/DependencyBuilder.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/VoluntarioRepository.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/DonacionRepository.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/BaseFileRepository.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/observer/NotificationObserver.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/core/AdraFacade.java</file>
+            <file>file:/C:/Users/USUARIO/Documents/GitHub/POO2_PROYECTOFINAL/src/adra/repository/DonacionFileRepositoryAdapter.java</file>
         </group>
     </open-files>
 </project-private>

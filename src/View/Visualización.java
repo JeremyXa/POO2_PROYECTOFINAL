@@ -5,22 +5,29 @@
 package View;
 import adra.core.AdraController;
 import adra.core.DependencyBuilder;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import java.util.regex.Pattern;
 /**
  *
  * @author USUARIO
  */
 public class Visualización extends javax.swing.JFrame {
     
-   private static final java.util.logging.Logger logger =
+ private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Visualización.class.getName());
 
-    // ==== RUTA BASE PARA LOS TXT ====
+    // ==== RUTA BASE PARA LOS TXT (misma que uses en el repositorio) ====
     private static final String BASE_DIR = "C:\\Users\\USUARIO\\Documents\\PYPOOO2";
     private static final String DONACIONES_FILE = BASE_DIR + "\\donaciones.txt";
 
@@ -28,10 +35,17 @@ public class Visualización extends javax.swing.JFrame {
     private final AdraController controller;
     private final Menu menuParent;
 
-    // Modelo de la tabla
+    // Modelo de la tabla y filtro
     private DefaultTableModel tableModel;
+    private TableRowSorter<DefaultTableModel> sorter;
 
-    // ==== CONSTRUCTORES =====================================================
+    // Lista interna con TODAS las donaciones tal como están en el TXT:
+    // [0]=codigo, [1]=descripcion, [2]=fecha, [3]=cantidad, [4]=donante, [5]=tipo
+    private final List<String[]> donacionesRaw = new ArrayList<>();
+
+    // =====================================================================
+    //                           CONSTRUCTORES
+    // =====================================================================
 
     /**
      * Constructor principal usado desde loginVisualizacion
@@ -50,7 +64,7 @@ public class Visualización extends javax.swing.JFrame {
      * Si solo te pasan el controller (sin menú)
      */
     public Visualización(AdraController controller) {
-        this(controller, null);        // reusa el constructor principal
+        this(controller, null);
     }
 
     /**
@@ -60,7 +74,9 @@ public class Visualización extends javax.swing.JFrame {
         this(DependencyBuilder.buildController(), null);
     }
 
-    // ==== CONFIGURACIÓN DE TABLA Y SELECCIÓN ===================================
+    // =====================================================================
+    //                  CONFIGURACIÓN DE TABLA Y SELECCIÓN
+    // =====================================================================
 
     private void configurarTabla() {
         tableModel = new DefaultTableModel(
@@ -73,16 +89,24 @@ public class Visualización extends javax.swing.JFrame {
                 return false;
             }
         };
+
         jTable1.setModel(tableModel);
+
+        // Filtro para poder buscar por código o donante
+        sorter = new TableRowSorter<>(tableModel);
+        jTable1.setRowSorter(sorter);
     }
 
     private void configurarSeleccionTabla() {
         jTable1.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int fila = jTable1.getSelectedRow();
-                if (fila >= 0 && tableModel.getRowCount() > fila) {
-                    Object descripcion = tableModel.getValueAt(fila, 2); // columna Descripción
-                    Object cantidad = tableModel.getValueAt(fila, 3);    // columna Cantidad
+                int viewRow = jTable1.getSelectedRow();
+                if (viewRow >= 0 && viewRow < jTable1.getRowCount()) {
+                    int modelRow = jTable1.convertRowIndexToModel(viewRow);
+
+                    Object descripcion = tableModel.getValueAt(modelRow, 2); // columna Descripción
+                    Object cantidad = tableModel.getValueAt(modelRow, 3);   // columna Cantidad
+
                     jTextField4.setText(descripcion != null ? descripcion.toString() : "");
                     jTextField5.setText(cantidad != null ? cantidad.toString() : "");
                 }
@@ -90,31 +114,48 @@ public class Visualización extends javax.swing.JFrame {
         });
     }
 
-    // ==== CARGA Y GUARDADO EN TXT =============================================
+    // =====================================================================
+    //                    CARGA Y GUARDADO EN TXT
+    // =====================================================================
 
+    /**
+     * Lee el archivo donaciones.txt y llena:
+     *  - la lista donacionesRaw (6 campos)
+     *  - la tabla (solo 4 columnas visibles)
+     */
     private void cargarDonacionesDesdeArchivo() {
-        tableModel.setRowCount(0); // limpiar tabla
+        tableModel.setRowCount(0);  // limpiar tabla
+        donacionesRaw.clear();      // limpiar lista interna
 
         Path path = Paths.get(DONACIONES_FILE);
         if (!Files.exists(path)) {
-            // Si no existe el archivo, no es error, solo no hay datos
+            // Si no existe el archivo, no es error: simplemente no hay datos
             return;
         }
 
         try {
             for (String linea : Files.readAllLines(path, StandardCharsets.UTF_8)) {
-                if (linea.trim().isEmpty()) continue;
+                if (linea == null) continue;
+                linea = linea.trim();
+                if (linea.isEmpty()) continue;
 
-                String[] partes = linea.split(";");
-                if (partes.length < 4) {
-                    // línea mal formada, la ignoramos
+                // Formato esperado: codigo|descripcion|fecha|cantidad|donante|tipo
+                String[] partes = linea.split("\\|");
+                if (partes.length < 6) {
+                    // línea mal formada, se ignora
                     continue;
                 }
 
-                String codigo = partes[0].trim();
-                String donante = partes[1].trim();
-                String descripcion = partes[2].trim();
+                String codigo      = partes[0].trim();
+                String descripcion = partes[1].trim();
+                String fecha       = partes[2].trim();  // no se muestra en tabla
                 String cantidadStr = partes[3].trim();
+                String donante     = partes[4].trim();
+                String tipo        = partes[5].trim();
+
+                donacionesRaw.add(new String[]{codigo, descripcion, fecha,
+                        cantidadStr, donante, tipo});
+
                 int cantidad = 0;
                 try {
                     cantidad = Integer.parseInt(cantidadStr);
@@ -122,6 +163,7 @@ public class Visualización extends javax.swing.JFrame {
                     // si falla, dejamos cantidad en 0
                 }
 
+                // En la tabla mostramos: Código, Donante, Descripción, Cantidad
                 tableModel.addRow(new Object[]{codigo, donante, descripcion, cantidad});
             }
         } catch (IOException ex) {
@@ -135,6 +177,10 @@ public class Visualización extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Guarda el contenido de donacionesRaw de vuelta al archivo,
+     * respetando el formato original con 6 campos separados por '|'.
+     */
     private void guardarTablaEnArchivo() {
         try {
             // Crear carpeta si no existe
@@ -145,22 +191,12 @@ public class Visualización extends javax.swing.JFrame {
 
             Path file = Paths.get(DONACIONES_FILE);
 
-            // Sobrescribimos el archivo con el contenido actual de la tabla
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                String codigo = String.valueOf(tableModel.getValueAt(i, 0));
-                String donante = String.valueOf(tableModel.getValueAt(i, 1));
-                String descripcion = String.valueOf(tableModel.getValueAt(i, 2));
-                String cantidad = String.valueOf(tableModel.getValueAt(i, 3));
-
-                sb.append(codigo)
-                        .append(';')
-                        .append(donante)
-                        .append(';')
-                        .append(descripcion)
-                        .append(';')
-                        .append(cantidad)
-                        .append(System.lineSeparator());
+            for (String[] campos : donacionesRaw) {
+                // campos: [0]=codigo, [1]=descripcion, [2]=fecha,
+                //         [3]=cantidad, [4]=donante, [5]=tipo
+                sb.append(String.join("|", campos))
+                  .append(System.lineSeparator());
             }
 
             Files.write(file, sb.toString().getBytes(StandardCharsets.UTF_8));
@@ -182,6 +218,7 @@ public class Visualización extends javax.swing.JFrame {
         jTextField7.setText("");
         jTable1.clearSelection();
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -331,7 +368,7 @@ public class Visualización extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setBackground(new java.awt.Color(0, 0, 0));
+        jTable1.setBackground(new java.awt.Color(153, 153, 153));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -520,9 +557,9 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-   // Eliminar donación seleccionada de la tabla
-        int fila = jTable1.getSelectedRow();
-        if (fila == -1) {
+   // Eliminar donación seleccionada
+        int viewRow = jTable1.getSelectedRow();
+        if (viewRow == -1) {
             JOptionPane.showMessageDialog(
                     this,
                     "Seleccione una donación en la tabla para eliminar.",
@@ -540,7 +577,14 @@ public class Visualización extends javax.swing.JFrame {
         );
 
         if (opcion == JOptionPane.YES_OPTION) {
-            tableModel.removeRow(fila);
+            int modelRow = jTable1.convertRowIndexToModel(viewRow);
+
+            // Quitar de la tabla y de la lista interna
+            tableModel.removeRow(modelRow);
+            donacionesRaw.remove(modelRow);
+
+            // Guardar inmediatamente en TXT
+            guardarTablaEnArchivo();
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -553,13 +597,12 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-         if (menuParent != null) {
-        menuParent.setVisible(true);
-    } else {
-        // Fallback por si se abrió sin menú
-        new Menu(controller).setVisible(true);
-    }
-    dispose();
+      if (menuParent != null) {
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
+        dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -618,70 +661,99 @@ public class Visualización extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField7ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       String codigo = jTextField6.getText().trim();
-        if (codigo.isEmpty()) {
+     if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresa el código de la donación.",
+                    "No hay donaciones cargadas.",
                     "Búsqueda",
-                    JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        int filaEncontrada = -1;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            Object valor = tableModel.getValueAt(i, 0); // columna Código
-            if (valor != null && codigo.equalsIgnoreCase(valor.toString())) {
-                filaEncontrada = i;
-                break;
-            }
+        String codigo = jTextField6.getText().trim();
+        if (codigo.isEmpty()) {
+            sorter.setRowFilter(null); // mostrar todas
+            JOptionPane.showMessageDialog(this,
+                    "Filtro limpiado. Se muestran todas las donaciones.",
+                    "Búsqueda",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
-        if (filaEncontrada == -1) {
+        RowFilter<DefaultTableModel, Object> rf =
+                RowFilter.regexFilter("^" + Pattern.quote(codigo) + "$", 0); // columna 0 = Código
+        sorter.setRowFilter(rf);
+
+        if (jTable1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this,
                     "No se encontró ninguna donación con código: " + codigo,
                     "Sin resultados",
                     JOptionPane.INFORMATION_MESSAGE);
-            jTable1.clearSelection();
         } else {
-            jTable1.setRowSelectionInterval(filaEncontrada, filaEncontrada);
-            jTable1.scrollRectToVisible(jTable1.getCellRect(filaEncontrada, 0, true));
+            jTable1.setRowSelectionInterval(0, 0);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-      String donante = jTextField7.getText().trim();
-        if (donante.isEmpty()) {
+       if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresa el nombre del donante.",
+                    "No hay donaciones cargadas.",
                     "Búsqueda",
-                    JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        int filaEncontrada = -1;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            Object valor = tableModel.getValueAt(i, 1); // columna Donante
-            if (valor != null && valor.toString().toLowerCase().contains(donante.toLowerCase())) {
-                filaEncontrada = i;
-                break;
-            }
+        String donante = jTextField7.getText().trim();
+        if (donante.isEmpty()) {
+            sorter.setRowFilter(null); // mostrar todas
+            JOptionPane.showMessageDialog(this,
+                    "Filtro limpiado. Se muestran todas las donaciones.",
+                    "Búsqueda",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
-        if (filaEncontrada == -1) {
+        // Contiene (insensible a mayúsculas/minúsculas) en columna 1 = Donante
+        RowFilter<DefaultTableModel, Object> rf =
+                RowFilter.regexFilter("(?i)" + Pattern.quote(donante), 1);
+        sorter.setRowFilter(rf);
+
+        if (jTable1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this,
                     "No se encontró ninguna donación para el donante: " + donante,
                     "Sin resultados",
                     JOptionPane.INFORMATION_MESSAGE);
-            jTable1.clearSelection();
         } else {
-            jTable1.setRowSelectionInterval(filaEncontrada, filaEncontrada);
-            jTable1.scrollRectToVisible(jTable1.getCellRect(filaEncontrada, 0, true));
+            jTable1.setRowSelectionInterval(0, 0);
         }
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-          int fila = jTable1.getSelectedRow();
-        if (fila == -1) {
+          int viewRow = jTable1.getSelectedRow();
+        if (viewRow == -1) {
             JOptionPane.showMessageDialog(
                     this,
                     "Seleccione una donación en la tabla para modificar.",
@@ -717,18 +789,50 @@ public class Visualización extends javax.swing.JFrame {
             return;
         }
 
+        int modelRow = jTable1.convertRowIndexToModel(viewRow);
+
         // Actualizar tabla
-        tableModel.setValueAt(nuevaDescripcion, fila, 2);
-        tableModel.setValueAt(nuevaCantidad, fila, 3);
+        tableModel.setValueAt(nuevaDescripcion, modelRow, 2);
+        tableModel.setValueAt(nuevaCantidad, modelRow, 3);
+
+        // Actualizar estructura interna (posición 1 = descripción, 3 = cantidad)
+        String[] datos = donacionesRaw.get(modelRow);
+        datos[1] = nuevaDescripcion;
+        datos[3] = String.valueOf(nuevaCantidad);
+
+        // Guardar inmediatamente en TXT
+        guardarTablaEnArchivo();
 
         JOptionPane.showMessageDialog(
                 this,
-                "Donación modificada en la tabla.\nPulsa GUARDAR para persistir los cambios en el TXT.",
+                "Donación modificada y guardada en el archivo.",
                 "Información",
                 JOptionPane.INFORMATION_MESSAGE
         );
     }//GEN-LAST:event_jButton8ActionPerformed
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
      /**
      * @param args the command line arguments
      */

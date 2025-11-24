@@ -1,19 +1,16 @@
 package adra.core;
 
 import adra.dto.ResultadoOperacion;
+import adra.factory.DonacionFactory;
 import adra.model.Donacion;
+import adra.model.Voluntario;
 import adra.service.DonacionService;
 import adra.service.EnvioService;
 import adra.service.VoluntarioService;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
-/**
- * Facade principal del sistema ADRA.
- * Envuelve los servicios de donaciones, envíos y voluntarios
- * y expone operaciones simples para las capas superiores (Views, Auth, etc.)
- */
 public class AdraFacade {
 
     private final DonacionService donacionService;
@@ -35,55 +32,32 @@ public class AdraFacade {
                                                 String fechaIngreso,
                                                 int cantidad,
                                                 String donante) {
-        return donacionService.registrarDonacion(
-                codigo, descripcion, fechaIngreso, cantidad, donante
+        // Construimos la entidad usando la fábrica
+        Donacion donacion = DonacionFactory.crear(
+                codigo,
+                descripcion,
+                fechaIngreso,
+                cantidad,
+                donante
         );
+        return donacionService.registrarDonacion(donacion);
     }
 
-    public List<Donacion> listarDonaciones() {
+    public List<Donacion> listarDonaciones() throws IOException {
         return donacionService.listarDonaciones();
     }
 
-    public List<Donacion> buscarDonacionesPorCodigo(String codigo) {
+    public List<Donacion> buscarDonacionesPorCodigo(String codigo) throws IOException {
         return donacionService.buscarDonacionesPorCodigo(codigo);
     }
 
-    public List<Donacion> buscarDonacionesPorDonante(String donante) {
+    public List<Donacion> buscarDonacionesPorDonante(String donante) throws IOException {
         return donacionService.buscarDonacionesPorDonante(donante);
     }
 
-    /**
-     * Búsqueda combinada por código y nombre de donante.
-     * Esta es la que suele usar la pantalla de VISUALIZACIÓN.
-     */
-    public List<Donacion> buscarDonaciones(String codigo, String donante) {
-        List<Donacion> todas = donacionService.listarDonaciones();
-        List<Donacion> resultado = new ArrayList<>();
-
-        String cod = (codigo == null ? "" : codigo.trim());
-        String don = (donante == null ? "" : donante.trim().toLowerCase());
-
-        for (Donacion d : todas) {
-            boolean coincide = true;
-
-            // filtro por código (si se ingresó)
-            if (!cod.isEmpty()) {
-                coincide = d.getCodigo() != null
-                        && d.getCodigo().equalsIgnoreCase(cod);
-            }
-
-            // filtro por donante (si se ingresó)
-            if (coincide && !don.isEmpty()) {
-                coincide = d.getDonante() != null
-                        && d.getDonante().toLowerCase().contains(don);
-            }
-
-            if (coincide) {
-                resultado.add(d);
-            }
-        }
-
-        return resultado;
+    // Búsqueda combinada (para la pantalla Envío)
+    public List<Donacion> buscarDonaciones(String codigo, String donante) throws IOException {
+        return donacionService.buscarDonaciones(codigo, donante);
     }
 
     // ======================= ENVÍOS =======================
@@ -92,13 +66,10 @@ public class AdraFacade {
                                              String destinatario,
                                              String destinoEnvio,
                                              String conductor) {
-
-        return envioService.registrarEnvio(
-                donaciones, destinatario, destinoEnvio, conductor
-        );
+        return envioService.registrarEnvio(donaciones, destinatario, destinoEnvio, conductor);
     }
 
-    // ==================== VOLUNTARIOS ====================
+    // ==================== VOLUNTARIOS =====================
 
     public ResultadoOperacion registrarVoluntario(String codigo,
                                                   String nombre,
@@ -107,8 +78,8 @@ public class AdraFacade {
                                                   int edad,
                                                   String correo,
                                                   String tarea) {
-        return voluntarioService.registrarVoluntario(
-                codigo, nombre, telefono, dni, edad, correo, tarea
-        );
+        Voluntario voluntario =
+                new Voluntario(codigo, nombre, telefono, dni, edad, correo, tarea);
+        return voluntarioService.registrarVoluntario(voluntario);
     }
 }

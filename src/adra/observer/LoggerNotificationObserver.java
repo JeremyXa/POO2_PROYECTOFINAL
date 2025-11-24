@@ -3,19 +3,16 @@ package adra.observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Implementación de NotificationObserver que escribe los mensajes en un Logger.
- */
 public class LoggerNotificationObserver implements NotificationObserver {
 
     private final Logger logger;
 
-    // Constructor sin parámetros: usado por DependencyBuilder
+    // Constructor sin parámetros (lo usa DependencyBuilder)
     public LoggerNotificationObserver() {
         this(Logger.getLogger(LoggerNotificationObserver.class.getName()));
     }
 
-    // Constructor con Logger inyectado (por si luego quieres otro logger)
+    // Constructor opcional si quisieras inyectar otro logger
     public LoggerNotificationObserver(Logger logger) {
         this.logger = logger;
     }

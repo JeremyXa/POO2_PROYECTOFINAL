@@ -37,7 +37,7 @@ public class DonacionFileRepositoryAdapter extends BaseFileRepository
         String buscado = codigo.toLowerCase();
         return findAll().stream()
                 .filter(d -> d.getCodigo() != null &&
-                             d.getCodigo().toLowerCase().contains(buscado))
+                        d.getCodigo().toLowerCase().contains(buscado))
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public class DonacionFileRepositoryAdapter extends BaseFileRepository
         String buscado = donante.toLowerCase();
         return findAll().stream()
                 .filter(d -> d.getDonante() != null &&
-                             d.getDonante().toLowerCase().contains(buscado))
+                        d.getDonante().toLowerCase().contains(buscado))
                 .collect(Collectors.toList());
     }
 
@@ -90,16 +90,13 @@ public class DonacionFileRepositoryAdapter extends BaseFileRepository
 
     private Donacion decode(String line) {
         String[] parts = line.split("\\|");
-        String codigo      = parts.length > 0 ? parts[0] : "";
+        String codigo = parts.length > 0 ? parts[0] : "";
         String descripcion = parts.length > 1 ? parts[1] : "";
-        String fecha       = parts.length > 2 ? parts[2] : "";
-        int cantidad       = 0;
-
+        String fecha = parts.length > 2 ? parts[2] : "";
+        int cantidad = 0;
         if (parts.length > 3) {
-            try { cantidad = Integer.parseInt(parts[3]); }
-            catch (NumberFormatException ignored) {}
+            try { cantidad = Integer.parseInt(parts[3]); } catch (NumberFormatException ignored) {}
         }
-
         String donante = parts.length > 4 ? parts[4] : "";
         TipoDonacion tipo = parts.length > 5
                 ? TipoDonacion.fromString(parts[5])

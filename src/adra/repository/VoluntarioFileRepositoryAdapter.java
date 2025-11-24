@@ -14,29 +14,29 @@ public class VoluntarioFileRepositoryAdapter extends BaseFileRepository
     }
 
     @Override
-    public void save(Voluntario v) throws IOException {
-        appendLine(encode(v));
+    public void save(Voluntario voluntario) throws IOException {
+        appendLine(encode(voluntario));
     }
 
     @Override
     public List<Voluntario> findAll() throws IOException {
         List<String> lines = readAllLines();
-        List<Voluntario> res = new ArrayList<>();
-        for (String l : lines) {
-            if (!l.trim().isEmpty()) {
-                res.add(decode(l));
+        List<Voluntario> resultado = new ArrayList<>();
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                resultado.add(decode(line));
             }
         }
-        return res;
+        return resultado;
     }
 
     private String encode(Voluntario v) {
-        return v.getCodigo()  + "|" +
-               v.getNombre()  + "|" +
-               v.getTelefono()+ "|" +
-               v.getDni()     + "|" +
-               v.getEdad()    + "|" +
-               v.getCorreo()  + "|" +
+        return v.getCodigo() + "|" +
+               v.getNombre() + "|" +
+               v.getTelefono() + "|" +
+               v.getDni() + "|" +
+               v.getEdad() + "|" +
+               v.getCorreo() + "|" +
                v.getTarea();
     }
 
@@ -48,11 +48,11 @@ public class VoluntarioFileRepositoryAdapter extends BaseFileRepository
         String dni      = p.length > 3 ? p[3] : "";
         int edad        = 0;
         if (p.length > 4) {
-            try { edad = Integer.parseInt(p[4]); }
-            catch (NumberFormatException ignored) {}
+            try { edad = Integer.parseInt(p[4]); } catch (NumberFormatException ignored) {}
         }
-        String correo = p.length > 5 ? p[5] : "";
-        String tarea  = p.length > 6 ? p[6] : "";
+        String correo   = p.length > 5 ? p[5] : "";
+        String tarea    = p.length > 6 ? p[6] : "";
+
         return new Voluntario(codigo, nombre, telefono, dni, edad, correo, tarea);
     }
 }

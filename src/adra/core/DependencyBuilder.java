@@ -2,44 +2,58 @@ package adra.core;
 
 import adra.observer.LoggerNotificationObserver;
 import adra.observer.NotificationObserver;
-import adra.repository.*;
-import adra.service.*;
-
-import java.util.logging.Logger;
+import adra.repository.DonacionFileRepositoryAdapter;
+import adra.repository.DonacionRepository;
+import adra.repository.EnvioFileRepositoryAdapter;
+import adra.repository.EnvioRepository;
+import adra.repository.VoluntarioFileRepositoryAdapter;
+import adra.repository.VoluntarioRepository;
+import adra.service.DonacionService;
+import adra.service.EnvioConstanciaFormatter;
+import adra.service.EnvioService;
+import adra.service.VoluntarioService;
 
 public class DependencyBuilder {
 
-    private DependencyBuilder() { }
+    private static final String BASE_DIR = "C:\\Users\\USUARIO\\Documents\\PYPOOO2";
+    private static final String DONACIONES_FILE   = BASE_DIR + "\\donaciones.txt";
+    private static final String ENVIOS_FILE       = BASE_DIR + "\\envios.txt";
+    private static final String VOLUNTARIOS_FILE  = BASE_DIR + "\\voluntarios.txt";
+    private static final String CONSTANCIAS_FILE  = BASE_DIR + "\\constancias_envio.txt";
+
+    private DependencyBuilder() {
+    }
 
     public static AdraController buildController() {
 
-        // Logger / observer
-        Logger logger = Logger.getLogger("ADRA");
-        NotificationObserver observer = new LoggerNotificationObserver(logger);
-
-        // Repositorios (ajusta las rutas a donde quieras guardar los TXT)
+        // -------- Repositorios ----------
         DonacionRepository donacionRepo =
-                new DonacionFileRepositoryAdapter("data/donaciones.txt");
+                new DonacionFileRepositoryAdapter(DONACIONES_FILE);
 
         EnvioRepository envioRepo =
-                new EnvioFileRepositoryAdapter("data/constancias_envio.txt");
+                new EnvioFileRepositoryAdapter(ENVIOS_FILE);
 
         VoluntarioRepository voluntarioRepo =
-                new VoluntarioFileRepositoryAdapter("data/voluntarios.txt");
+                new VoluntarioFileRepositoryAdapter(VOLUNTARIOS_FILE);
 
-        // Servicios
+        // -------- Observer (logger global) ----------
+        NotificationObserver observer = new LoggerNotificationObserver();
+
+        // -------- Servicios ----------
         DonacionService donacionService =
                 new DonacionService(donacionRepo, observer);
 
-        EnvioConstanciaFormatter formatter = new EnvioConstanciaFormatter();
+        EnvioConstanciaFormatter formatter =
+                new EnvioConstanciaFormatter(CONSTANCIAS_FILE);
 
         EnvioService envioService =
                 new EnvioService(envioRepo, formatter, observer);
 
+        // Dejo VoluntarioService como tú lo tenías (solo con repositorio)
         VoluntarioService voluntarioService =
-                new VoluntarioService(voluntarioRepo, observer);
+                new VoluntarioService(voluntarioRepo);
 
-        // Controller
+        // -------- Controller principal ----------
         return new AdraController(donacionService, envioService, voluntarioService);
     }
 }

@@ -1,5 +1,12 @@
 package adra.observer;
 
+/**
+ * Observador simple para registrar mensajes de notificación.
+ */
 public interface NotificationObserver {
-    void notify(String message);
+
+    /**
+     * Envía un mensaje de notificación.
+     */
+    void notificar(String mensaje);
 }

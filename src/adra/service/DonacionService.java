@@ -1,100 +1,65 @@
 package adra.service;
 
 import adra.dto.ResultadoOperacion;
-import adra.factory.DonacionFactory;
 import adra.model.Donacion;
 import adra.observer.NotificationObserver;
 import adra.repository.DonacionRepository;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class DonacionService {
 
-    private final DonacionRepository repository;
+    private final DonacionRepository donacionRepository;
     private final NotificationObserver observer;
 
-    public DonacionService(DonacionRepository repository,
+    // === CONSTRUCTOR QUE USA DependencyBuilder ===
+    public DonacionService(DonacionRepository donacionRepository,
                            NotificationObserver observer) {
-        this.repository = repository;
+        this.donacionRepository = donacionRepository;
         this.observer = observer;
     }
 
-    public ResultadoOperacion registrarDonacion(String codigo,
-                                                String descripcion,
-                                                String fechaIngreso,
-                                                int cantidad,
-                                                String donante) {
-        Donacion d = DonacionFactory.crear(codigo, descripcion, fechaIngreso, cantidad, donante);
+    // ---------- OPERACIONES PRINCIPALES ----------
+
+    public ResultadoOperacion registrarDonacion(Donacion donacion) {
         try {
-            repository.save(d);
-            notifyObserver("Donación registrada: " + codigo);
+            donacionRepository.save(donacion);
+
+            if (observer != null) {
+                observer.notificar("Donación registrada: " + donacion.getCodigo());
+            }
+
             return ResultadoOperacion.exito("Donación registrada correctamente.");
         } catch (IOException e) {
-            notifyObserver("Error registrando donación: " + e.getMessage());
-            return ResultadoOperacion.error("Error al registrar la donación.");
+            if (observer != null) {
+                observer.notificar("Error registrando donación: " + e.getMessage());
+            }
+            return ResultadoOperacion.error("Error registrando donación: " + e.getMessage());
         }
     }
 
     public List<Donacion> listarDonaciones() {
         try {
-            return repository.findAll();
+            return donacionRepository.findAll();
         } catch (IOException e) {
-            notifyObserver("Error listando donaciones: " + e.getMessage());
-            return Collections.emptyList();
+            throw new RuntimeException("Error listando donaciones", e);
         }
     }
 
     public List<Donacion> buscarDonacionesPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            return listarDonaciones();
-        }
         try {
-            return repository.findByCodigo(codigo);
+            return donacionRepository.findByCodigo(codigo);
         } catch (IOException e) {
-            notifyObserver("Error buscando por código: " + e.getMessage());
-            return Collections.emptyList();
+            throw new RuntimeException("Error buscando donaciones por código", e);
         }
     }
 
     public List<Donacion> buscarDonacionesPorDonante(String donante) {
-        if (donante == null || donante.isBlank()) {
-            return listarDonaciones();
-        }
         try {
-            return repository.findByDonante(donante);
+            return donacionRepository.findByDonante(donante);
         } catch (IOException e) {
-            notifyObserver("Error buscando por donante: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    public ResultadoOperacion actualizarDonacion(Donacion donacion) {
-        try {
-            repository.update(donacion);
-            notifyObserver("Donación actualizada: " + donacion.getCodigo());
-            return ResultadoOperacion.exito("Donación actualizada correctamente.");
-        } catch (IOException e) {
-            notifyObserver("Error actualizando donación: " + e.getMessage());
-            return ResultadoOperacion.error("Error al actualizar la donación.");
-        }
-    }
-
-    public ResultadoOperacion eliminarDonacionPorCodigo(String codigo) {
-        try {
-            repository.deleteByCodigo(codigo);
-            notifyObserver("Donación eliminada: " + codigo);
-            return ResultadoOperacion.exito("Donación eliminada correctamente.");
-        } catch (IOException e) {
-            notifyObserver("Error eliminando donación: " + e.getMessage());
-            return ResultadoOperacion.error("Error al eliminar la donación.");
-        }
-    }
-
-    private void notifyObserver(String msg) {
-        if (observer != null) {
-            observer.notify(msg);
+            throw new RuntimeException("Error buscando donaciones por donante", e);
         }
     }
 }

@@ -1,104 +1,114 @@
 package adra.core;
 
 import adra.dto.ResultadoOperacion;
-import adra.factory.DonacionFactory;
 import adra.model.Donacion;
-import adra.model.Voluntario;
 import adra.service.DonacionService;
 import adra.service.EnvioService;
 import adra.service.VoluntarioService;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Facade principal del sistema ADRA.
+ * Envuelve los servicios de donaciones, envíos y voluntarios
+ * y expone operaciones simples para las capas superiores (Views, Auth, etc.)
+ */
 public class AdraFacade {
 
     private final DonacionService donacionService;
-    private final VoluntarioService voluntarioService;
     private final EnvioService envioService;
-    private final DonacionFactory donacionFactory;
+    private final VoluntarioService voluntarioService;
 
     public AdraFacade(DonacionService donacionService,
-                      VoluntarioService voluntarioService,
                       EnvioService envioService,
-                      DonacionFactory donacionFactory) {
+                      VoluntarioService voluntarioService) {
         this.donacionService = donacionService;
-        this.voluntarioService = voluntarioService;
         this.envioService = envioService;
-        this.donacionFactory = donacionFactory;
+        this.voluntarioService = voluntarioService;
     }
 
-    // ==== REGISTRO DE DONACIONES ====
+    // ===================== DONACIONES =====================
 
-    public ResultadoOperacion registrarDonacion(String donante,
+    public ResultadoOperacion registrarDonacion(String codigo,
                                                 String descripcion,
                                                 String fechaIngreso,
                                                 int cantidad,
-                                                String codigo) {
-        Donacion donacion = donacionFactory.crear(donante, descripcion, fechaIngreso, cantidad, codigo);
-        return donacionService.guardar(donacion);
+                                                String donante) {
+        return donacionService.registrarDonacion(
+                codigo, descripcion, fechaIngreso, cantidad, donante
+        );
+    }
+
+    public List<Donacion> listarDonaciones() {
+        return donacionService.listarDonaciones();
     }
 
     public List<Donacion> buscarDonacionesPorCodigo(String codigo) {
-        Donacion d = donacionService.buscarPorCodigo(codigo);
-        if (d == null) {
-            return Collections.emptyList();
-        }
-        return Collections.singletonList(d);
+        return donacionService.buscarDonacionesPorCodigo(codigo);
     }
 
     public List<Donacion> buscarDonacionesPorDonante(String donante) {
-        return donacionService.buscarPorDonante(donante);
+        return donacionService.buscarDonacionesPorDonante(donante);
     }
 
-    public ResultadoOperacion actualizarDonacion(String codigo,
-                                                 String nuevaDescripcion,
-                                                 int nuevaCantidad) {
-        Donacion existente = donacionService.buscarPorCodigo(codigo);
-        if (existente == null) {
-            return ResultadoOperacion.error("No existe una donación con ese código.");
+    /**
+     * Búsqueda combinada por código y nombre de donante.
+     * Esta es la que suele usar la pantalla de VISUALIZACIÓN.
+     */
+    public List<Donacion> buscarDonaciones(String codigo, String donante) {
+        List<Donacion> todas = donacionService.listarDonaciones();
+        List<Donacion> resultado = new ArrayList<>();
+
+        String cod = (codigo == null ? "" : codigo.trim());
+        String don = (donante == null ? "" : donante.trim().toLowerCase());
+
+        for (Donacion d : todas) {
+            boolean coincide = true;
+
+            // filtro por código (si se ingresó)
+            if (!cod.isEmpty()) {
+                coincide = d.getCodigo() != null
+                        && d.getCodigo().equalsIgnoreCase(cod);
+            }
+
+            // filtro por donante (si se ingresó)
+            if (coincide && !don.isEmpty()) {
+                coincide = d.getDonante() != null
+                        && d.getDonante().toLowerCase().contains(don);
+            }
+
+            if (coincide) {
+                resultado.add(d);
+            }
         }
-        existente.setDescripcion(nuevaDescripcion);
-        existente.setCantidad(nuevaCantidad);
-        return donacionService.actualizar(existente);
+
+        return resultado;
     }
 
-    public ResultadoOperacion eliminarDonacion(String codigo) {
-        return donacionService.eliminarPorCodigo(codigo);
+    // ======================= ENVÍOS =======================
+
+    public ResultadoOperacion registrarEnvio(List<Donacion> donaciones,
+                                             String destinatario,
+                                             String destinoEnvio,
+                                             String conductor) {
+
+        return envioService.registrarEnvio(
+                donaciones, destinatario, destinoEnvio, conductor
+        );
     }
 
-    public List<Donacion> obtenerTodasLasDonaciones() {
-        return donacionService.obtenerTodas();
-    }
+    // ==================== VOLUNTARIOS ====================
 
-    public ResultadoOperacion guardarDonaciones() {
-        return donacionService.guardarCambios();
-    }
-
-    // ==== VOLUNTARIOS ====
-
-    public ResultadoOperacion registrarVoluntario(String nombreCompleto,
-                                                  String codigo,
+    public ResultadoOperacion registrarVoluntario(String codigo,
+                                                  String nombre,
                                                   String telefono,
                                                   String dni,
                                                   int edad,
                                                   String correo,
                                                   String tarea) {
-        Voluntario voluntario = new Voluntario(codigo, nombreCompleto, telefono,
-                dni, edad, correo, tarea);
-        return voluntarioService.registrarVoluntario(voluntario);
-    }
-
-    public ResultadoOperacion guardarVoluntarios() {
-        return voluntarioService.guardarCambios();
-    }
-
-    // ==== ENVÍOS ====
-
-    public ResultadoOperacion registrarEnvio(String destinatario,
-                                             String destino,
-                                             String conductor,
-                                             List<Donacion> donaciones) {
-        return envioService.registrarEnvio(destinatario, destino, conductor, donaciones);
+        return voluntarioService.registrarVoluntario(
+                codigo, nombre, telefono, dni, edad, correo, tarea
+        );
     }
 }

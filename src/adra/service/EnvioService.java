@@ -2,51 +2,49 @@ package adra.service;
 
 import adra.dto.ResultadoOperacion;
 import adra.model.Donacion;
-import adra.model.Envio;
-import adra.observer.NotificacionObserver;
+import adra.observer.NotificationObserver;
 import adra.repository.EnvioRepository;
-import adra.util.EnvioConstanciaFormatter;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 public class EnvioService {
 
-    private final EnvioRepository repository;
-    private final List<NotificacionObserver> observers = new ArrayList<>();
+    private final EnvioRepository envioRepository;
+    private final EnvioConstanciaFormatter formatter;
+    private final NotificationObserver observer;
 
-    public EnvioService(EnvioRepository repository) {
-        this.repository = repository;
+    public EnvioService(EnvioRepository envioRepository,
+                        EnvioConstanciaFormatter formatter,
+                        NotificationObserver observer) {
+        this.envioRepository = envioRepository;
+        this.formatter = formatter;
+        this.observer = observer;
     }
 
-    public void agregarObserver(NotificacionObserver observer) {
+    public ResultadoOperacion registrarEnvio(List<Donacion> donaciones,
+                                             String destinatario,
+                                             String destinoEnvio,
+                                             String conductor) {
+
+        if (donaciones == null || donaciones.isEmpty()) {
+            return ResultadoOperacion.error("No hay donaciones seleccionadas para el envío.");
+        }
+
+        String constancia = formatter.generarConstancia(donaciones, destinatario, destinoEnvio, conductor);
+        try {
+            envioRepository.saveEnvio(constancia);
+            notifyObserver("Envío registrado para destinatario: " + destinatario);
+            return ResultadoOperacion.exito("Constancia generada y guardada correctamente.");
+        } catch (IOException e) {
+            notifyObserver("Error registrando envío: " + e.getMessage());
+            return ResultadoOperacion.error("Error al generar la constancia de envío.");
+        }
+    }
+
+    private void notifyObserver(String msg) {
         if (observer != null) {
-            observers.add(observer);
+            observer.notify(msg);
         }
-    }
-
-    private void notificar(String mensaje) {
-        for (NotificacionObserver o : observers) {
-            o.notificar(mensaje);
-        }
-    }
-
-    public ResultadoOperacion registrarEnvio(String destinatario,
-                                             String destino,
-                                             String conductor,
-                                             List<Donacion> donaciones) {
-        if (destinatario == null || destinatario.isBlank()
-                || destino == null || destino.isBlank()
-                || conductor == null || conductor.isBlank()
-                || donaciones == null || donaciones.isEmpty()) {
-            return ResultadoOperacion.error("Datos de envío incompletos.");
-        }
-
-        Envio envio = new Envio(destinatario, destino, conductor, donaciones);
-        String constancia = EnvioConstanciaFormatter.formatear(envio);
-        repository.guardarConstancia(constancia);
-        notificar("Se registró un envío con ID: " + envio.getId());
-
-        return ResultadoOperacion.exito("Envío registrado y constancia generada.");
     }
 }

@@ -3,28 +3,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
+
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
 import javax.swing.JOptionPane;
-/**
- *
- * @author angel
- */
 public class loginRegistro extends javax.swing.JFrame {
     
-     private static final java.util.logging.Logger logger =
+   private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(loginRegistro.class.getName());
-     
-     // Credenciales simples para el módulo de REGISTRO
- private static final String USERNAME = "registro";
-    private static final String PASSWORD = "1234";
+
+    // Controller compartido
+    private final AdraController controller;
 
     /**
-     * Creates new form loginRegistro
+     * Constructor principal: usar este cuando se llame desde el menú
      */
-    public loginRegistro() {
-      initComponents();
-        setLocationRelativeTo(null); // centrar ventana
+    public loginRegistro(AdraController controller) {
+        this.controller = controller;
+        initComponents();
+        setLocationRelativeTo(null);
     }
 
+    /**
+     * Constructor sin parámetros (solo para previsualizar en NetBeans)
+     */
+    public loginRegistro() {
+        this(DependencyBuilder.buildController());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -190,55 +195,63 @@ public class loginRegistro extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-         // Enter en usuario (podrías mover el foco a contraseña si quieres)
-        jTextField2.requestFocus();
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-       // Enter en contraseña -> intentar login
-        jButton7ActionPerformed(evt);
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-         this.dispose();
-        new Menu().setVisible(true);
+     Menu menu = new Menu(controller);
+        menu.setLocationRelativeTo(this);
+        menu.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+         if (controller == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
         String usuario = jTextField1.getText().trim();
         String contrasena = jTextField2.getText().trim();
 
         if (usuario.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Completa usuario y contraseña.",
-                    "Campos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese usuario y contraseña.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
 
-        if (USERNAME.equals(usuario) && PASSWORD.equals(contrasena)) {
-            logger.info("Acceso CORRECTO al módulo REGISTRO por el usuario: " + usuario);
-            // Abrir ventana de Registro
-            new Registro().setVisible(true);
-            this.dispose();
-        } else {
-            logger.warning("Intento de login FALLIDO en REGISTRO con usuario: " + usuario);
-            JOptionPane.showMessageDialog(this,
-                    "Usuario o contraseña incorrectos.",
-                    "Error de autenticación",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        // Aquí podrías agregar validación real (contra archivo, BD, etc.)
+        // Por ahora, si no están vacíos se permite el acceso.
+        JOptionPane.showMessageDialog(
+                this,
+                "Acceso concedido.",
+                "Información",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        Registro registro = new Registro(controller);
+        registro.setLocationRelativeTo(this);
+        registro.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -249,10 +262,11 @@ public class loginRegistro extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new loginRegistro().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            AdraController controller = DependencyBuilder.buildController();
+            new loginRegistro(controller).setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

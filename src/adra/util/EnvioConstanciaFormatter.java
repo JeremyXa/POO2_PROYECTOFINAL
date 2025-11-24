@@ -1,38 +1,43 @@
-package adra.util;
+package adra.service;
 
 import adra.model.Donacion;
-import adra.model.Envio;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-public final class EnvioConstanciaFormatter {
+public class EnvioConstanciaFormatter {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private final DateTimeFormatter dateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private EnvioConstanciaFormatter() {
-        // Utility class
-    }
+    public String generarConstancia(List<Donacion> donaciones,
+                                    String destinatario,
+                                    String destinoEnvio,
+                                    String conductor) {
 
-    public static String formatear(Envio envio) {
+        String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
-        sb.append("********* CONSTANCIA DE ENVÍO *********").append(System.lineSeparator());
-        sb.append("ID de envío   : ").append(envio.getId()).append(System.lineSeparator());
-        sb.append("Fecha y hora  : ").append(envio.getFechaHora().format(FORMATTER)).append(System.lineSeparator());
-        sb.append("Destinatario  : ").append(envio.getDestinatario()).append(System.lineSeparator());
-        sb.append("Destino       : ").append(envio.getDestino()).append(System.lineSeparator());
-        sb.append("Conductor     : ").append(envio.getConductor()).append(System.lineSeparator());
-        sb.append("Donaciones:").append(System.lineSeparator());
-        for (Donacion d : envio.getDonaciones()) {
-            sb.append(" - ")
-              .append(d.getCodigo())
-              .append(" | ")
+
+        sb.append("================================").append(nl);
+        sb.append("CONSTANCIA DE ENVÍO - ADRA").append(nl);
+        sb.append("Fecha generación: ")
+          .append(LocalDateTime.now().format(dateTimeFormatter)).append(nl);
+        sb.append("Destinatario: ").append(destinatario).append(nl);
+        sb.append("Destino de envío: ").append(destinoEnvio).append(nl);
+        sb.append("Conductor: ").append(conductor).append(nl);
+        sb.append(nl);
+        sb.append("Donaciones:").append(nl);
+
+        for (Donacion d : donaciones) {
+            sb.append("- [").append(d.getCodigo()).append("] ")
               .append(d.getDescripcion())
-              .append(" | Cantidad: ")
-              .append(d.getCantidad())
-              .append(System.lineSeparator());
+              .append(" (").append(d.getCantidad()).append(") ")
+              .append(d.getDonante())
+              .append(" [").append(d.getTipo().name()).append("]").append(nl);
         }
-        sb.append("****************************************");
+
+        sb.append("================================").append(nl).append(nl);
         return sb.toString();
     }
 }

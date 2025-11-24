@@ -5,10 +5,26 @@ import adra.model.TipoDonacion;
 
 public class DonacionFactory {
 
-    public Donacion crear(String donante, String descripcion,
-                          String fechaIngreso, int cantidad, String codigo) {
+    private DonacionFactory() { }
 
-        TipoDonacion tipo = TipoDonacion.fromCodigo(codigo);
-        return new Donacion(codigo, donante, descripcion, fechaIngreso, cantidad, tipo);
+    // Usa el código (A#, R#, M#) para deducir el tipo
+    public static Donacion crear(String codigo,
+                                 String descripcion,
+                                 String fechaIngreso,
+                                 int cantidad,
+                                 String donante) {
+
+        TipoDonacion tipo = TipoDonacion.fromCodigoDonacion(codigo);
+        return new Donacion(codigo, descripcion, fechaIngreso, cantidad, donante, tipo);
+    }
+
+    // Sobrecarga por si en algún momento quieres pasar el tipo explícito
+    public static Donacion crear(String codigo,
+                                 String descripcion,
+                                 String fechaIngreso,
+                                 int cantidad,
+                                 String donante,
+                                 TipoDonacion tipo) {
+        return new Donacion(codigo, descripcion, fechaIngreso, cantidad, donante, tipo);
     }
 }

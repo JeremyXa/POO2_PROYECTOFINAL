@@ -18,16 +18,6 @@ public class ResultadoOperacion {
         return new ResultadoOperacion(false, mensaje);
     }
 
-    public boolean isExito() {
-        return exito;
-    }
-
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    @Override
-    public String toString() {
-        return (exito ? "Éxito: " : "Error: ") + mensaje;
-    }
+    public boolean isExito()     { return exito; }
+    public String  getMensaje()  { return mensaje; }
 }

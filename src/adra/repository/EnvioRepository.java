@@ -1,5 +1,7 @@
 package adra.repository;
 
+import java.io.IOException;
+
 public interface EnvioRepository {
-    void guardarConstancia(String constancia);
+    void saveEnvio(String constanciaTexto) throws IOException;
 }

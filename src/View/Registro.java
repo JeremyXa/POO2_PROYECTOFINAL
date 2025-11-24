@@ -3,19 +3,36 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
+
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import adra.dto.ResultadoOperacion;
 import javax.swing.JOptionPane;
+
 public class Registro extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Registro.class.getName());
+      private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(Registro.class.getName());
+
+    // === referencia al controller ===
+    private final AdraController controller;
 
     /**
-     * Creates new form NewJFrame
+     * Constructor usado por el programa
      */
-    public Registro() {
-       initComponents();
-        setLocationRelativeTo(null); // centrar ventana
+    public Registro(AdraController controller) {
+        this.controller = controller;
+        initComponents();
+        setLocationRelativeTo(null);
     }
 
+    /**
+     * Constructor vacío solo para el editor de formularios
+     * (NO lo uses en el main).
+     */
+    public Registro() {
+        this(null);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -307,7 +324,16 @@ public class Registro extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-     String donante = jTextField5.getText().trim();
+         // AGREGAR (registrar en el TXT)
+        if (controller == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String donante = jTextField5.getText().trim();
         String descripcion = jTextField1.getText().trim();
         String fecha = jTextField2.getText().trim();
         String cantidadStr = jTextField3.getText().trim();
@@ -316,8 +342,8 @@ public class Registro extends javax.swing.JFrame {
         if (donante.isEmpty() || descripcion.isEmpty() || fecha.isEmpty()
                 || cantidadStr.isEmpty() || codigo.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Completa todos los campos antes de agregar.",
-                    "Campos incompletos",
+                    "Completa todos los campos.",
+                    "Validación",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -325,61 +351,71 @@ public class Registro extends javax.swing.JFrame {
         int cantidad;
         try {
             cantidad = Integer.parseInt(cantidadStr);
-            if (cantidad <= 0) {
-                throw new NumberFormatException();
-            }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
-                    "La cantidad debe ser un número entero positivo.",
-                    "Cantidad inválida",
-                    JOptionPane.ERROR_MESSAGE);
+                    "La cantidad debe ser un número entero.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Aquí en el futuro se llamará al Controller/Service para registrar la donación
-        logger.info("Donación agregada (en memoria / simulada): "
-                + "Donante=" + donante
-                + ", Desc=" + descripcion
-                + ", Fecha=" + fecha
-                + ", Cantidad=" + cantidad
-                + ", Código=" + codigo);
-
-        JOptionPane.showMessageDialog(this,
-                "Donación agregada correctamente (simulación).",
-                "Éxito",
-                JOptionPane.INFORMATION_MESSAGE);
+        try {
+            ResultadoOperacion resultado =
+                    controller.registrarDonacion(codigo, descripcion, fecha, cantidad, donante);
+            if (resultado.isExito()) {
+                JOptionPane.showMessageDialog(this,
+                        resultado.getMensaje(),
+                        "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        resultado.getMensaje(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Error registrando donación", ex);
+            JOptionPane.showMessageDialog(this,
+                    "Ocurrió un error al registrar la donación.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         // En una siguiente etapa se conectará con repositorio/archivo/BD
-        logger.info("Simulación de guardado de donación.");
+         // GUARDAR -> solo limpia el formulario para ingresar otra
+        limpiarFormulario();
         JOptionPane.showMessageDialog(this,
-                "Datos guardados correctamente (simulación).\n" +
-                "Más adelante se conectará con el repositorio real.",
-                "Guardado",
+                "Formulario listo para una nueva donación.",
+                "Información",
                 JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-         this.dispose();                 // cierra esta ventana
-        new Menu().setVisible(true);    // abre el menú principal
+         // Salir: volver al menú principal
+        this.dispose();
+        // Reutilizamos el mismo controller
+        new Menu(controller).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
-
+ private void limpiarFormulario() {
+        jTextField5.setText("");
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+    }
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info :
+                    javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -388,12 +424,13 @@ public class Registro extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Registro().setVisible(true));
+        /* Crear controller y mostrar la pantalla */
+        java.awt.EventQueue.invokeLater(() -> {
+            AdraController controller = DependencyBuilder.buildController();
+            new Registro(controller).setVisible(true);
+        });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

@@ -3,25 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-import javax.swing.JOptionPane;
+
 /**
  *
  * @author angel
  */
 public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger =
-            java.util.logging.Logger.getLogger(loginRegistroDeVoluntarios.class.getName());
-  // Credenciales simples para el módulo REGISTRO DE VOLUNTARIOS
-    
-    private static final String USERNAME = "voluntarios";
-    private static final String PASSWORD = "1234";
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(loginRegistroDeVoluntarios.class.getName());
+
     /**
      * Creates new form loginRegistroDeVoluntarios
      */
     public loginRegistroDeVoluntarios() {
-          initComponents();
-        setLocationRelativeTo(null); // centrar ventan
+        initComponents();
     }
 
     /**
@@ -177,51 +172,23 @@ public class loginRegistroDeVoluntarios extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-          // Enter en contraseña -> intentar login
-        jButton7ActionPerformed(evt);
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-            // Enter en usuario -> pasa al campo cargo
-        jTextField3.requestFocus();
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
-         // Enter en cargo -> pasa a contraseña
-        jTextField2.requestFocus();
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-      this.dispose();
-        new Menu().setVisible(true);
+        // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        String usuario = jTextField1.getText().trim();
-        String cargo = jTextField3.getText().trim();
-        String contrasena = jTextField2.getText().trim();
-
-        if (usuario.isEmpty() || cargo.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Completa Usuario, Cargo y Contraseña.",
-                    "Campos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        if (USERNAME.equals(usuario) && PASSWORD.equals(contrasena)) {
-            logger.info("Acceso CORRECTO al módulo VOLUNTARIOS. Usuario: "
-                    + usuario + " | Cargo: " + cargo);
-            new RegistroDeVoluntarios().setVisible(true);
-            this.dispose();
-        } else {
-            logger.warning("Intento de login FALLIDO en VOLUNTARIOS con usuario: " + usuario);
-            JOptionPane.showMessageDialog(this,
-                    "Usuario o contraseña incorrectos.",
-                    "Error de autenticación",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-
+        // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**

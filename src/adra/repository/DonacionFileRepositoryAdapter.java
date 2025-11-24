@@ -4,158 +4,107 @@ import adra.model.Donacion;
 import adra.model.TipoDonacion;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-public class DonacionFileRepositoryAdapter implements DonacionRepository {
+public class DonacionFileRepositoryAdapter extends BaseFileRepository
+        implements DonacionRepository {
 
-    private static final Logger logger = Logger.getLogger(DonacionFileRepositoryAdapter.class.getName());
-
-    private final Path archivo;
-    private final List<Donacion> cache = new ArrayList<>();
-
-    public DonacionFileRepositoryAdapter(String rutaArchivo) {
-        this.archivo = Paths.get(rutaArchivo);
-        cargarDesdeArchivo();
-    }
-
-    private void cargarDesdeArchivo() {
-        cache.clear();
-        if (!Files.exists(archivo)) {
-            return;
-        }
-        try {
-            List<String> lineas = Files.readAllLines(archivo, StandardCharsets.UTF_8);
-            for (String linea : lineas) {
-                if (linea == null || linea.isBlank()) {
-                    continue;
-                }
-                String[] partes = linea.split(";", -1);
-                if (partes.length < 5) {
-                    continue;
-                }
-                String codigo = partes[0];
-                String donante = partes[1];
-                String descripcion = partes[2];
-                String fecha = partes[3];
-                int cantidad;
-                try {
-                    cantidad = Integer.parseInt(partes[4]);
-                } catch (NumberFormatException e) {
-                    cantidad = 0;
-                }
-                TipoDonacion tipo = TipoDonacion.fromCodigo(codigo);
-                Donacion donacion = new Donacion(codigo, donante, descripcion, fecha, cantidad, tipo);
-                cache.add(donacion);
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error leyendo archivo de donaciones", e);
-        }
-    }
-
-    private String noNull(String s) {
-        return s == null ? "" : s;
-    }
-
-    private String serializar(Donacion d) {
-        return String.join(";",
-                noNull(d.getCodigo()),
-                noNull(d.getDonante()),
-                noNull(d.getDescripcion()),
-                noNull(d.getFechaIngreso()),
-                Integer.toString(d.getCantidad()));
+    public DonacionFileRepositoryAdapter(String filePath) {
+        super(filePath);
     }
 
     @Override
-    public synchronized void agregar(Donacion donacion) {
-        if (donacion == null) {
-            return;
-        }
-        Donacion existente = buscarPorCodigo(donacion.getCodigo());
-        if (existente != null) {
-            actualizar(donacion);
-        } else {
-            cache.add(donacion);
-            guardarCambios();
-        }
+    public void save(Donacion donacion) throws IOException {
+        appendLine(encode(donacion));
     }
 
     @Override
-    public synchronized void actualizar(Donacion donacion) {
-        if (donacion == null) {
-            return;
-        }
-        for (int i = 0; i < cache.size(); i++) {
-            if (cache.get(i).getCodigo().equalsIgnoreCase(donacion.getCodigo())) {
-                cache.set(i, donacion);
-                break;
-            }
-        }
-        guardarCambios();
-    }
-
-    @Override
-    public synchronized void eliminarPorCodigo(String codigo) {
-        if (codigo == null) {
-            return;
-        }
-        cache.removeIf(d -> codigo.equalsIgnoreCase(d.getCodigo()));
-        guardarCambios();
-    }
-
-    @Override
-    public synchronized Donacion buscarPorCodigo(String codigo) {
-        if (codigo == null) {
-            return null;
-        }
-        for (Donacion d : cache) {
-            if (codigo.equalsIgnoreCase(d.getCodigo())) {
-                return d;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public synchronized List<Donacion> buscarPorDonante(String donante) {
-        if (donante == null) {
-            return Collections.emptyList();
-        }
-        String criterio = donante.toLowerCase();
+    public List<Donacion> findAll() throws IOException {
+        List<String> lines = readAllLines();
         List<Donacion> resultado = new ArrayList<>();
-        for (Donacion d : cache) {
-            if (d.getDonante() != null &&
-                    d.getDonante().toLowerCase().contains(criterio)) {
-                resultado.add(d);
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                resultado.add(decode(line));
             }
         }
         return resultado;
     }
 
     @Override
-    public synchronized List<Donacion> obtenerTodas() {
-        return new ArrayList<>(cache);
+    public List<Donacion> findByCodigo(String codigo) throws IOException {
+        String buscado = codigo.toLowerCase();
+        return findAll().stream()
+                .filter(d -> d.getCodigo() != null &&
+                             d.getCodigo().toLowerCase().contains(buscado))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public synchronized void guardarCambios() {
-        try {
-            if (archivo.getParent() != null) {
-                Files.createDirectories(archivo.getParent());
+    public List<Donacion> findByDonante(String donante) throws IOException {
+        String buscado = donante.toLowerCase();
+        return findAll().stream()
+                .filter(d -> d.getDonante() != null &&
+                             d.getDonante().toLowerCase().contains(buscado))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void update(Donacion donacion) throws IOException {
+        List<Donacion> todas = findAll();
+        for (int i = 0; i < todas.size(); i++) {
+            if (todas.get(i).getCodigo().equalsIgnoreCase(donacion.getCodigo())) {
+                todas.set(i, donacion);
+                break;
             }
-            List<String> lineas = new ArrayList<>();
-            for (Donacion d : cache) {
-                lineas.add(serializar(d));
-            }
-            Files.write(archivo, lineas, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error escribiendo archivo de donaciones", e);
         }
+        List<String> lines = new ArrayList<>();
+        for (Donacion d : todas) {
+            lines.add(encode(d));
+        }
+        writeAllLines(lines);
+    }
+
+    @Override
+    public void deleteByCodigo(String codigo) throws IOException {
+        List<Donacion> todas = findAll();
+        String buscado = codigo.toLowerCase();
+        List<String> lines = new ArrayList<>();
+        for (Donacion d : todas) {
+            if (!d.getCodigo().toLowerCase().equals(buscado)) {
+                lines.add(encode(d));
+            }
+        }
+        writeAllLines(lines);
+    }
+
+    private String encode(Donacion d) {
+        return d.getCodigo() + "|" +
+               d.getDescripcion() + "|" +
+               d.getFechaIngreso() + "|" +
+               d.getCantidad() + "|" +
+               d.getDonante() + "|" +
+               d.getTipo().name();
+    }
+
+    private Donacion decode(String line) {
+        String[] parts = line.split("\\|");
+        String codigo      = parts.length > 0 ? parts[0] : "";
+        String descripcion = parts.length > 1 ? parts[1] : "";
+        String fecha       = parts.length > 2 ? parts[2] : "";
+        int cantidad       = 0;
+
+        if (parts.length > 3) {
+            try { cantidad = Integer.parseInt(parts[3]); }
+            catch (NumberFormatException ignored) {}
+        }
+
+        String donante = parts.length > 4 ? parts[4] : "";
+        TipoDonacion tipo = parts.length > 5
+                ? TipoDonacion.fromString(parts[5])
+                : TipoDonacion.fromCodigoDonacion(codigo);
+
+        return new Donacion(codigo, descripcion, fecha, cantidad, donante, tipo);
     }
 }

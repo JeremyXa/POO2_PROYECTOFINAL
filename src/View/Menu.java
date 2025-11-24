@@ -4,21 +4,29 @@
  */
 package View;
 
-/**
- *
- * @author USUARIO
- */
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
 public class Menu extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Menu.class.getName());
+private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(Menu.class.getName());
 
-    /**
-     * Creates new form Menu
-     */
-    public Menu() {
+    // Controller compartido por todas las vistas
+    private final AdraController controller;
+
+    // ====== CONSTRUCTORES ======
+
+    // Constructor principal: SIEMPRE usar este en la app
+    public Menu(AdraController controller) {
+        this.controller = controller;
         initComponents();
+        setLocationRelativeTo(null);
     }
 
+    // Constructor sin parámetros (solo para previsualizar en NetBeans)
+    public Menu() {
+        this(DependencyBuilder.buildController());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -179,54 +187,73 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            try {
-            this.dispose();
-            new LoginEnvio().setVisible(true);
-        } catch (Exception ex) {
-            logger.log(java.util.logging.Level.SEVERE, "Error al abrir LoginEnvio", ex);
+      if (controller == null) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
         }
+        Envio envio = new Envio(controller);
+        envio.setLocationRelativeTo(this);
+        envio.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-           try {
-            this.dispose();
-            new loginRegistro().setVisible(true);
-        } catch (Exception ex) {
-            logger.log(java.util.logging.Level.SEVERE, "Error al abrir loginRegistro", ex);
+         if (controller == null) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
         }
+        Registro registro = new Registro(controller);
+        registro.setLocationRelativeTo(this);
+        registro.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-           try {
-            this.dispose();
-            new loginVisualizacion().setVisible(true);
-        } catch (Exception ex) {
-            logger.log(java.util.logging.Level.SEVERE, "Error al abrir loginVisualizacion", ex);
+   if (controller == null) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
         }
+        Visualización visualizacion = new Visualización(controller);
+        visualizacion.setLocationRelativeTo(this);
+        visualizacion.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-       try {
-            this.dispose();
-            new loginRegistroDeVoluntarios().setVisible(true);
-        } catch (Exception ex) {
-            logger.log(java.util.logging.Level.SEVERE, "Error al abrir loginRegistroDeVoluntarios", ex);
+          if (controller == null) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
         }
+        RegistroDeVoluntarios regVol = new RegistroDeVoluntarios(controller);
+        regVol.setLocationRelativeTo(this);
+        regVol.setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-   // Cierra toda la aplicación
-        System.exit(0);    }//GEN-LAST:event_jButton4ActionPerformed
+        dispose();  
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+  public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -237,10 +264,11 @@ public class Menu extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Menu().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            AdraController controller = DependencyBuilder.buildController();
+            new Menu(controller).setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

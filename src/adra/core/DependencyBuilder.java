@@ -1,59 +1,45 @@
 package adra.core;
 
-import adra.auth.AuthStrategy;
-import adra.auth.EnvioAuthStrategy;
-import adra.auth.RegistroAuthStrategy;
-import adra.auth.VisualizacionAuthStrategy;
-import adra.auth.VoluntarioSupervisorAuthStrategy;
-import adra.factory.DonacionFactory;
-import adra.observer.LoggerNotificacionObserver;
-import adra.observer.NotificacionObserver;
-import adra.repository.DonacionFileRepositoryAdapter;
-import adra.repository.DonacionRepository;
-import adra.repository.EnvioFileRepositoryAdapter;
-import adra.repository.EnvioRepository;
-import adra.repository.VoluntarioFileRepositoryAdapter;
-import adra.repository.VoluntarioRepository;
-import adra.service.DonacionService;
-import adra.service.EnvioService;
-import adra.service.VoluntarioService;
+import adra.observer.LoggerNotificationObserver;
+import adra.observer.NotificationObserver;
+import adra.repository.*;
+import adra.service.*;
 
-public final class DependencyBuilder {
+import java.util.logging.Logger;
 
-    private DependencyBuilder() {
-        // Utility class
-    }
+public class DependencyBuilder {
+
+    private DependencyBuilder() { }
 
     public static AdraController buildController() {
-        // Ruta base en tu máquina (ajusta USUARIO si hace falta)
-        String basePath = "C:\\\\Users\\\\USUARIO\\\\Documents\\\\PYPOOO2\\\\";
-        String donacionesFile = basePath + "donaciones.txt";
-        String voluntariosFile = basePath + "voluntarios.txt";
-        String enviosFile = basePath + "envios.txt";
 
-        DonacionRepository donacionRepository = new DonacionFileRepositoryAdapter(donacionesFile);
-        VoluntarioRepository voluntarioRepository = new VoluntarioFileRepositoryAdapter(voluntariosFile);
-        EnvioRepository envioRepository = new EnvioFileRepositoryAdapter(enviosFile);
+        // Logger / observer
+        Logger logger = Logger.getLogger("ADRA");
+        NotificationObserver observer = new LoggerNotificationObserver(logger);
 
-        DonacionService donacionService = new DonacionService(donacionRepository);
-        VoluntarioService voluntarioService = new VoluntarioService(voluntarioRepository);
-        EnvioService envioService = new EnvioService(envioRepository);
+        // Repositorios (ajusta las rutas a donde quieras guardar los TXT)
+        DonacionRepository donacionRepo =
+                new DonacionFileRepositoryAdapter("data/donaciones.txt");
 
-        // Observer para logs
-        NotificacionObserver loggerObserver = new LoggerNotificacionObserver();
-        donacionService.agregarObserver(loggerObserver);
-        voluntarioService.agregarObserver(loggerObserver);
-        envioService.agregarObserver(loggerObserver);
+        EnvioRepository envioRepo =
+                new EnvioFileRepositoryAdapter("data/constancias_envio.txt");
 
-        DonacionFactory donacionFactory = new DonacionFactory();
-        AdraFacade facade = new AdraFacade(donacionService, voluntarioService, envioService, donacionFactory);
+        VoluntarioRepository voluntarioRepo =
+                new VoluntarioFileRepositoryAdapter("data/voluntarios.txt");
 
-        // Estrategias de autenticación
-        AuthStrategy registroAuth = new RegistroAuthStrategy();
-        AuthStrategy visualizacionAuth = new VisualizacionAuthStrategy();
-        AuthStrategy envioAuth = new EnvioAuthStrategy();
-        AuthStrategy supervisorAuth = new VoluntarioSupervisorAuthStrategy();
+        // Servicios
+        DonacionService donacionService =
+                new DonacionService(donacionRepo, observer);
 
-        return new AdraController(facade, registroAuth, visualizacionAuth, envioAuth, supervisorAuth);
+        EnvioConstanciaFormatter formatter = new EnvioConstanciaFormatter();
+
+        EnvioService envioService =
+                new EnvioService(envioRepo, formatter, observer);
+
+        VoluntarioService voluntarioService =
+                new VoluntarioService(voluntarioRepo, observer);
+
+        // Controller
+        return new AdraController(donacionService, envioService, voluntarioService);
     }
 }

@@ -1,10 +1,11 @@
 package adra.repository;
 
 import adra.model.Voluntario;
+
+import java.io.IOException;
 import java.util.List;
 
 public interface VoluntarioRepository {
-    void agregar(Voluntario voluntario);
-    List<Voluntario> obtenerTodos();
-    void guardarCambios();
+    void save(Voluntario voluntario) throws IOException;
+    List<Voluntario> findAll() throws IOException;
 }

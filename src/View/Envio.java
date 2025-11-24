@@ -4,282 +4,75 @@
  */
 package View;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import adra.dto.ResultadoOperacion;
+import adra.model.Donacion;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 public class Envio extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Envio.class.getName());
 
-    // === RUTAS DE ARCHIVOS ===
-    private static final String BASE_PATH = "C:\\Users\\USUARIO\\Documents\\PYPOOO2\\";
-    private static final String DONACIONES_FILE = BASE_PATH + "donaciones.txt";
-    // Constancias generadas por el área de envío
-    private static final String CONSTANCIAS_FILE = BASE_PATH + "constancias_envio.txt";
-    // Opcional: guardar solo el contenido del paquete
-    private static final String PAQUETES_FILE = BASE_PATH + "paquetes_envio.txt";
+    // ====== MVC ======
+    private final AdraController controller;
 
-    // Modelos para las tablas
-    private DefaultTableModel modeloDonaciones; // Tabla de resultados de búsqueda (jTable3)
-    private DefaultTableModel modeloPaquete;    // Tabla de donaciones del paquete (jTable2)
-    
-    
-    
-    public Envio() {
+    // ====== Modelo de tablas y listas ======
+    private DefaultTableModel modeloBusqueda;   // jTable2
+    private DefaultTableModel modeloEnvio;      // jTable3
+
+    private final List<Donacion> resultadosBusqueda = new ArrayList<>();
+    private final List<Donacion> listaAEnviar = new ArrayList<>();
+
+    /**
+     * Constructor usado por el programa (con controller).
+     */
+    public Envio(AdraController controller) {
+        this.controller = controller;
         initComponents();
-        inicializarModelosTablas();
-        asegurarCarpetaBase();
-    }
-private void inicializarModelosTablas() {
-        // Tabla de búsqueda (izquierda)
-        modeloDonaciones = new DefaultTableModel(
-                new Object[]{"Código", "Donante", "Descripción", "Fecha ingreso", "Cantidad"}, 0
-        );
-        jTable3.setModel(modeloDonaciones);
-
-        // Tabla del paquete (derecha)
-        modeloPaquete = new DefaultTableModel(
-                new Object[]{"Código", "Donante", "Descripción", "Fecha ingreso", "Cantidad"}, 0
-        );
-        jTable2.setModel(modeloPaquete);
+        setLocationRelativeTo(null);
+        configurarTablas();
     }
 
-
-   private void asegurarCarpetaBase() {
-        File base = new File(BASE_PATH);
-        if (!base.exists()) {
-            base.mkdirs();
-        }
+    /**
+     * Constructor vacío SOLO para el editor de formularios.
+     * NO usarlo en la ejecución real.
+     */
+    public Envio() {
+        this(null);
     }
-   
-   private void buscarDonaciones() {
-        String codigoFiltro = jTextField6.getText().trim();
-        String donanteFiltro = jTextField4.getText().trim();
 
-        if (codigoFiltro.isEmpty() && donanteFiltro.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Ingrese al menos el código o el nombre del donante para buscar.",
-                    "Datos insuficientes",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-   
-   modeloDonaciones.setRowCount(0); // limpiar tabla
+    // ================== CONFIGURACIÓN DE TABLAS ==================
 
-        File archivoDonaciones = new File(DONACIONES_FILE);
-        if (!archivoDonaciones.exists()) {
-            JOptionPane.showMessageDialog(this,
-                    "Aún no existe el archivo de donaciones.\nRegistre donaciones primero.",
-                    "Archivo no encontrado",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivoDonaciones))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (linea.trim().isEmpty()) {
-                    continue;
-                }
-                // Formato esperado: codigo;donante;descripcion;fecha;cantidad
-                String[] partes = linea.split(";");
-                if (partes.length < 5) {
-                    continue; // línea mal formada
-                }
-
-                String codigo = partes[0];
-                String donante = partes[1];
-                String descripcion = partes[2];
-                String fecha = partes[3];
-                String cantidad = partes[4];
-
-                boolean coincide = true;
-
-                if (!codigoFiltro.isEmpty() && !codigo.equalsIgnoreCase(codigoFiltro)) {
-                    coincide = false;
-                }
-                if (!donanteFiltro.isEmpty() && !donante.equalsIgnoreCase(donanteFiltro)) {
-                    coincide = false;
-                }
-
-                if (coincide) {
-                    modeloDonaciones.addRow(new Object[]{
-                        codigo, donante, descripcion, fecha, cantidad
-                    });
-                }
+    private void configurarTablas() {
+        // Tabla de búsqueda
+        modeloBusqueda = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Código", "Donante", "Descripción", "Cantidad", "Tipo"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
+        };
+        jTable2.setModel(modeloBusqueda);
 
-            if (modeloDonaciones.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(this,
-                        "No se encontraron donaciones con los datos ingresados.",
-                        "Sin resultados",
-                        JOptionPane.INFORMATION_MESSAGE);
+        // Tabla de donaciones seleccionadas para envío
+        modeloEnvio = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Código", "Donante", "Descripción", "Cantidad", "Tipo"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Error al leer el archivo de donaciones", ex);
-            JOptionPane.showMessageDialog(this,
-                    "Error al leer el archivo de donaciones:\n" + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        };
+        jTable3.setModel(modeloEnvio);
     }
-
-    /**
-     * Agrega la donación seleccionada en la tabla de búsqueda (jTable3) a la
-     * tabla de paquete (jTable2).
-     */
-    private void agregarDonacionAPaquete() {
-        int fila = jTable3.getSelectedRow();
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione una donación en la tabla de resultados para agregar al paquete.",
-                    "Sin selección",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Object[] datos = new Object[modeloDonaciones.getColumnCount()];
-        for (int i = 0; i < datos.length; i++) {
-            datos[i] = modeloDonaciones.getValueAt(fila, i);
-        }
-
-        modeloPaquete.addRow(datos);
-    }
-
-    /**
-     * Guarda solo el contenido actual del paquete en un archivo TXT
-     * (paquetes_envio.txt).
-     */
-    private void guardarPaqueteEnArchivo() {
-        if (modeloPaquete.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this,
-                    "No hay donaciones en el paquete para guardar.",
-                    "Paquete vacío",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        asegurarCarpetaBase();
-
-        try (FileWriter fw = new FileWriter(PAQUETES_FILE, true)) {
-            fw.write("PAQUETE DE DONACIONES\n");
-            for (int i = 0; i < modeloPaquete.getRowCount(); i++) {
-                fw.write(modeloPaquete.getValueAt(i, 0) + ";" // código
-                        + modeloPaquete.getValueAt(i, 1) + ";" // donante
-                        + modeloPaquete.getValueAt(i, 2) + ";" // desc
-                        + modeloPaquete.getValueAt(i, 3) + ";" // fecha
-                        + modeloPaquete.getValueAt(i, 4)       // cantidad
-                        + System.lineSeparator());
-            }
-            fw.write("-----------------------------------------------------\n");
-            JOptionPane.showMessageDialog(this,
-                    "Paquete guardado correctamente en:\n" + PAQUETES_FILE,
-                    "Éxito",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Error al guardar el paquete", ex);
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar el paquete:\n" + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Genera la constancia de envío con la información del paquete, del
-     * destinatario/destino y del conductor.
-     */
-    private void generarConstanciaEnvio() {
-        if (modeloPaquete.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this,
-                    "No hay donaciones en el paquete para generar constancia.",
-                    "Paquete vacío",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Ojo: en la interfaz original hay etiqueta "Introducir destinatario" (jLabel3),
-        // pero no tiene un JTextField propio.
-        // Usaremos:
-        //  - jTextField5 como destino/destinatario de envío
-        //  - jTextField3 como nombre de conductor
-
-        String destinoODestinatario = jTextField5.getText().trim();
-        String conductor = jTextField3.getText().trim();
-
-        if (destinoODestinatario.isEmpty() || conductor.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Ingrese el destino/destinatario y el nombre del conductor.",
-                    "Datos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        asegurarCarpetaBase();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("CONSTANCIA DE ENVÍO").append(System.lineSeparator());
-        sb.append("Fecha y hora: ").append(java.time.LocalDateTime.now()).append(System.lineSeparator());
-        sb.append("Destino/Destinatario: ").append(destinoODestinatario).append(System.lineSeparator());
-        sb.append("Conductor: ").append(conductor).append(System.lineSeparator());
-        sb.append("Donaciones incluidas:").append(System.lineSeparator());
-
-        for (int i = 0; i < modeloPaquete.getRowCount(); i++) {
-            sb.append("- Código: ").append(modeloPaquete.getValueAt(i, 0))
-                    .append(", Donante: ").append(modeloPaquete.getValueAt(i, 1))
-                    .append(", Descripción: ").append(modeloPaquete.getValueAt(i, 2))
-                    .append(", Fecha: ").append(modeloPaquete.getValueAt(i, 3))
-                    .append(", Cantidad: ").append(modeloPaquete.getValueAt(i, 4))
-                    .append(System.lineSeparator());
-        }
-        sb.append("-----------------------------------------------------").append(System.lineSeparator());
-
-        try (FileWriter fw = new FileWriter(CONSTANCIAS_FILE, true)) {
-            fw.write(sb.toString());
-            JOptionPane.showMessageDialog(this,
-                    "Constancia generada y guardada correctamente en:\n" + CONSTANCIAS_FILE,
-                    "Éxito",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Error al guardar la constancia de envío", ex);
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar la constancia:\n" + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void volverAlMenu() {
-        this.dispose();
-        new Menu().setVisible(true);
-    }
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -597,22 +390,70 @@ private void inicializarModelosTablas() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    
-    
-    
-    
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-volverAlMenu();
+      this.dispose();
+        if (controller != null) {
+            new Menu(controller).setVisible(true);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        guardarPaqueteEnArchivo();
+          // Guardar / limpiar formulario
+        limpiarFormulario();
+        JOptionPane.showMessageDialog(
+                this,
+                "Formulario listo para un nuevo envío.",
+                "Información",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        buscarDonaciones();
+      if (controller == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String codigo = jTextField6.getText().trim();
+        String donante = jTextField4.getText().trim();
+
+        try {
+            List<Donacion> resultados = controller.buscarDonaciones(codigo, donante);
+            resultadosBusqueda.clear();
+            resultadosBusqueda.addAll(resultados);
+
+            modeloBusqueda.setRowCount(0);
+            for (Donacion d : resultados) {
+                modeloBusqueda.addRow(new Object[]{
+                        d.getCodigo(),
+                        d.getDonante(),
+                        d.getDescripcion(),
+                        d.getCantidad(),
+                        (d.getTipo() != null ? d.getTipo().name() : "")
+                });
+            }
+
+            if (resultados.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se encontraron donaciones con esos criterios.",
+                        "Búsqueda",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al buscar donaciones", ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ocurrió un error al buscar donaciones.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -620,7 +461,68 @@ volverAlMenu();
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-     generarConstanciaEnvio();
+         if (controller == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (listaAEnviar.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Agrega al menos una donación al envío.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // OJO: la interfaz solo tiene un campo (jTextField5) para destino,
+        // lo usamos tanto como destinatario como destino de envío.
+        String destinatario = jTextField5.getText().trim();
+        String destinoEnvio = jTextField5.getText().trim();
+        String conductor = jTextField3.getText().trim();
+
+        if (destinatario.isEmpty() || conductor.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Completa destinatario/destino y nombre del conductor.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            ResultadoOperacion resultado =
+                    controller.registrarEnvio(listaAEnviar, destinatario, destinoEnvio, conductor);
+
+            if (resultado.isExito()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        resultado.getMensaje(),
+                        "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        resultado.getMensaje(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al generar constancia", ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ocurrió un error al generar la constancia.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
@@ -636,8 +538,62 @@ volverAlMenu();
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      agregarDonacionAPaquete();
+       int fila = jTable2.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Selecciona una donación de la tabla de búsqueda.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (fila < 0 || fila >= resultadosBusqueda.size()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La selección no es válida.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        Donacion seleccionada = resultadosBusqueda.get(fila);
+
+        // Evitar duplicados
+        for (Donacion d : listaAEnviar) {
+            if (d.getCodigo().equalsIgnoreCase(seleccionada.getCodigo())) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Esa donación ya fue agregada al envío.",
+                        "Información",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                return;
+            }
+        }
+
+        listaAEnviar.add(seleccionada);
+        modeloEnvio.addRow(new Object[]{
+                seleccionada.getCodigo(),
+                seleccionada.getDonante(),
+                seleccionada.getDescripcion(),
+                seleccionada.getCantidad(),
+                (seleccionada.getTipo() != null ? seleccionada.getTipo().name() : "")
+        });
     }//GEN-LAST:event_jButton2ActionPerformed
+   private void limpiarFormulario() {
+        jTextField6.setText(""); // código
+        jTextField4.setText(""); // donante
+        jTextField5.setText(""); // destinatario/destino
+        jTextField3.setText(""); // conductor
+
+        modeloBusqueda.setRowCount(0);
+        modeloEnvio.setRowCount(0);
+        resultadosBusqueda.clear();
+        listaAEnviar.clear();
+    }
 
     /**
      * @param args the command line arguments

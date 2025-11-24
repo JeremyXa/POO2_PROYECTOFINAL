@@ -3,72 +3,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-import java.util.logging.Level;
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
 import javax.swing.JOptionPane;
-/**
- *
- * @author angel
- */
 public class LoginEnvio extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginEnvio.class.getName());
+   private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(LoginEnvio.class.getName());
 
-    // === CREDENCIALES PERMITIDAS PARA ENVÍO ===
-    // Puedes cambiarlas según lo que necesites.
-    private static final String USUARIO_PERMITIDO = "envio";
-    private static final String PASSWORD_PERMITIDO = "1234";
+    // Controller compartido
+    private final AdraController controller;
+
     /**
-     * Creates new form LoginEnvio
+     * Constructor principal: usar este cuando se llame desde el menú
+     */
+    public LoginEnvio(AdraController controller) {
+        this.controller = controller;
+        initComponents();
+        setLocationRelativeTo(null);
+    }
+
+    /**
+     * Constructor sin parámetros (solo para previsualizar en NetBeans)
      */
     public LoginEnvio() {
-        initComponents();
-    }
-// Método para ir al menú principal
-    private void volverAlMenu() {
-        try {
-            this.dispose();
-            new Menu().setVisible(true);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Error al abrir el menú principal", ex);
-            JOptionPane.showMessageDialog(this,
-                    "Error al abrir el menú principal:\n" + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        this(DependencyBuilder.buildController());
     }
 
-    // Método para validar el login e ir a Envio
-    private void intentarLoginEnvio() {
-        String usuario = jTextField1.getText().trim();
-        String password = jTextField2.getText().trim();
-
-        if (usuario.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Ingrese usuario y contraseña.",
-                    "Datos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        if (usuario.equalsIgnoreCase(USUARIO_PERMITIDO)
-                && password.equals(PASSWORD_PERMITIDO)) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Acceso correcto. Bienvenido al módulo de envíos.",
-                    "Login exitoso",
-                    JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-            new Envio().setVisible(true);
-
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Usuario o contraseña incorrectos.",
-                    "Acceso denegado",
-                    JOptionPane.ERROR_MESSAGE);
-            jTextField2.setText("");
-            jTextField2.requestFocus();
-        }
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -234,21 +195,54 @@ public class LoginEnvio extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-   intentarLoginEnvio();    }//GEN-LAST:event_jButton7ActionPerformed
+        if (controller == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        String usuario = jTextField1.getText().trim();
+        String contrasena = jTextField2.getText().trim();
+
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese usuario y contraseña.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // Aquí podrías validar contra una lista de usuarios/roles, etc.
+        JOptionPane.showMessageDialog(
+                this,
+                "Acceso concedido al módulo de Envíos.",
+                "Información",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        Envio envio = new Envio(controller); // asegúrate que Envio tenga este constructor
+        envio.setLocationRelativeTo(this);
+        envio.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-         volverAlMenu();
+         Menu menu = new Menu(controller);
+        menu.setLocationRelativeTo(this);
+        menu.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -259,10 +253,11 @@ public class LoginEnvio extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new LoginEnvio().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            AdraController controller = DependencyBuilder.buildController();
+            new LoginEnvio(controller).setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

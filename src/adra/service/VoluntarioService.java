@@ -2,44 +2,44 @@ package adra.service;
 
 import adra.dto.ResultadoOperacion;
 import adra.model.Voluntario;
-import adra.observer.NotificacionObserver;
+import adra.observer.NotificationObserver;
 import adra.repository.VoluntarioRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class VoluntarioService {
 
     private final VoluntarioRepository repository;
-    private final List<NotificacionObserver> observers = new ArrayList<>();
+    private final NotificationObserver observer;
 
-    public VoluntarioService(VoluntarioRepository repository) {
+    public VoluntarioService(VoluntarioRepository repository,
+                             NotificationObserver observer) {
         this.repository = repository;
+        this.observer = observer;
     }
 
-    public void agregarObserver(NotificacionObserver observer) {
+    public ResultadoOperacion registrarVoluntario(String codigo,
+                                                  String nombre,
+                                                  String telefono,
+                                                  String dni,
+                                                  int edad,
+                                                  String correo,
+                                                  String tarea) {
+
+        Voluntario v = new Voluntario(codigo, nombre, telefono, dni, edad, correo, tarea);
+        try {
+            repository.save(v);
+            notifyObserver("Voluntario registrado: " + codigo);
+            return ResultadoOperacion.exito("Voluntario registrado correctamente.");
+        } catch (IOException e) {
+            notifyObserver("Error registrando voluntario: " + e.getMessage());
+            return ResultadoOperacion.error("Error al registrar el voluntario.");
+        }
+    }
+
+    private void notifyObserver(String msg) {
         if (observer != null) {
-            observers.add(observer);
+            observer.notify(msg);
         }
-    }
-
-    private void notificar(String mensaje) {
-        for (NotificacionObserver o : observers) {
-            o.notificar(mensaje);
-        }
-    }
-
-    public ResultadoOperacion registrarVoluntario(Voluntario voluntario) {
-        if (voluntario == null) {
-            return ResultadoOperacion.error("El voluntario es nulo.");
-        }
-        repository.agregar(voluntario);
-        notificar("Se registró voluntario: " + voluntario.getCodigo());
-        return ResultadoOperacion.exito("Voluntario registrado y asignado correctamente.");
-    }
-
-    public ResultadoOperacion guardarCambios() {
-        repository.guardarCambios();
-        return ResultadoOperacion.exito("Cambios de voluntarios guardados en archivo.");
     }
 }

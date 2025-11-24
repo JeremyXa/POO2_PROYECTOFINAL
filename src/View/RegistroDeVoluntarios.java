@@ -3,23 +3,94 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
-/**
- *
- * @author angel
- */
 public class RegistroDeVoluntarios extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RegistroDeVoluntarios.class.getName());
+   
+    private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(RegistroDeVoluntarios.class.getName());
+
+    // === RUTA BASE / ARCHIVO VOLUNTARIOS ======================================
+    private static final String BASE_DIR = "C:\\Users\\USUARIO\\Documents\\PYPOOO2";
+    private static final String VOLUNTARIOS_FILE = BASE_DIR + "\\voluntarios.txt";
+
+    // Controlador compartido
+    private final AdraController controller;
 
     /**
-     * Creates new form RegistroDeVoluntarios
+     * Constructor principal (usar desde el Menu)
      */
-    public RegistroDeVoluntarios() {
-       initComponents();
-        setLocationRelativeTo(null); // centrar ventan
+    public RegistroDeVoluntarios(AdraController controller) {
+        this.controller = controller;
+        initComponents();
+        setLocationRelativeTo(null); // centrar ventana
     }
 
+    /**
+     * Constructor sin parámetros (para pruebas / ejecutar directo)
+     */
+    public RegistroDeVoluntarios() {
+        this(DependencyBuilder.buildController());
+    }
+
+    // =======================================================================
+
+    private void guardarVoluntarioEnArchivo(String codigo,
+                                            String nombre,
+                                            String telefono,
+                                            String dni,
+                                            int edad,
+                                            String correo,
+                                            String tarea) {
+        try {
+            // Crear carpeta si no existe
+            Path baseDir = Paths.get(BASE_DIR);
+            if (!Files.exists(baseDir)) {
+                Files.createDirectories(baseDir);
+            }
+
+            Path file = Paths.get(VOLUNTARIOS_FILE);
+
+            String linea = codigo + ";" +
+                           nombre + ";" +
+                           telefono + ";" +
+                           dni + ";" +
+                           edad + ";" +
+                           correo + ";" +
+                           tarea + System.lineSeparator();
+
+            Files.write(
+                    file,
+                    linea.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND
+            );
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Error guardando voluntario en archivo", ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error al guardar el voluntario en el archivo:\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    private void limpiarFormulario() {
+        jTextField3.setText("");  // nombre completo
+        jTextField4.setText("");  // código
+        jTextField6.setText("");  // teléfono
+        jTextField7.setText("");  // DNI
+        jTextField12.setText(""); // edad
+        jTextField11.setText(""); // correo
+        jTextField10.setText(""); // tarea
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -317,8 +388,8 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-      this.dispose();
-        new Menu().setVisible(true);
+     this.dispose();
+        new Menu(controller).setVisible(true);
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -346,91 +417,7 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        String nombreCompleto = jTextField3.getText().trim();
-        String codigoVoluntario = jTextField4.getText().trim();
-        String telefono = jTextField6.getText().trim();
-        String dni = jTextField7.getText().trim();
-        String edadStr = jTextField12.getText().trim();
-        String correo = jTextField11.getText().trim();
-        String tarea = jTextField10.getText().trim();
 
-        // Validar campos vacíos
-        if (nombreCompleto.isEmpty() || codigoVoluntario.isEmpty()
-                || telefono.isEmpty() || dni.isEmpty()
-                || edadStr.isEmpty() || correo.isEmpty()
-                || tarea.isEmpty()) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Completa todos los campos antes de registrar al voluntario.",
-                    "Campos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Validar edad
-        int edad;
-        try {
-            edad = Integer.parseInt(edadStr);
-            if (edad <= 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "La edad debe ser un número entero positivo.",
-                    "Edad inválida",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Validar que teléfono y DNI sean numéricos
-        if (!telefono.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this,
-                    "El número de teléfono solo debe contener dígitos.",
-                    "Teléfono inválido",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!dni.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this,
-                    "El DNI solo debe contener dígitos.",
-                    "DNI inválido",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Validación sencilla de correo
-        if (!correo.contains("@") || !correo.contains(".")) {
-            JOptionPane.showMessageDialog(this,
-                    "Ingresa un correo electrónico válido.",
-                    "Correo inválido",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Aquí, en el futuro, se llamará al Controller/Service para guardar el voluntario
-        logger.info("Voluntario registrado (simulación): "
-                + "Nombre=" + nombreCompleto
-                + ", Código=" + codigoVoluntario
-                + ", Teléfono=" + telefono
-                + ", DNI=" + dni
-                + ", Edad=" + edad
-                + ", Correo=" + correo
-                + ", Tarea=" + tarea);
-
-        JOptionPane.showMessageDialog(this,
-                "Voluntario registrado y asignado correctamente (simulación).",
-                "Éxito",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        // Si quieres, puedes limpiar los campos después:
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField6.setText("");
-        jTextField7.setText("");
-        jTextField12.setText("");
-        jTextField11.setText("");
-        jTextField10.setText("");
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
@@ -446,18 +433,60 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField11ActionPerformed
 
     private void jTextField12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField12ActionPerformed
-        // TODO add your handling code here:
+         // Registrar y asignar voluntario -> guardar en TXT y limpiar
+
+        String nombre = jTextField3.getText().trim();
+        String codigo = jTextField4.getText().trim();
+        String telefono = jTextField6.getText().trim();
+        String dni = jTextField7.getText().trim();
+        String edadStr = jTextField12.getText().trim();
+        String correo = jTextField11.getText().trim();
+        String tarea = jTextField10.getText().trim();
+
+        if (nombre.isEmpty() || codigo.isEmpty() || telefono.isEmpty()
+                || dni.isEmpty() || edadStr.isEmpty()
+                || correo.isEmpty() || tarea.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Completa todos los campos antes de registrar.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        int edad;
+        try {
+            edad = Integer.parseInt(edadStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La edad debe ser un número entero.",
+                    "Error de formato",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Guardar en archivo
+        guardarVoluntarioEnArchivo(codigo, nombre, telefono, dni, edad, correo, tarea);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Voluntario registrado y asignado correctamente.",
+                "Éxito",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        // Limpiar para permitir otro registro
+        limpiarFormulario();
     }//GEN-LAST:event_jTextField12ActionPerformed
 
-    /**
+   /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -468,7 +497,6 @@ public class RegistroDeVoluntarios extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new RegistroDeVoluntarios().setVisible(true));

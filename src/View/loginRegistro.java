@@ -4,20 +4,43 @@
  */
 package View;
 
-/**
- *
- * @author angel
- */
+import adra.core.AdraController;
+import adra.core.DependencyBuilder;
+import javax.swing.JOptionPane;
 public class loginRegistro extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(loginRegistro.class.getName());
+  private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(loginRegistro.class.getName());
+
+    // Controller compartido
+    private final AdraController controller;
+    // Referencia al menú que abrió este login (puede ser null si se abre directo)
+    private final Menu menuParent;
 
     /**
-     * Creates new form loginRegistro
+     * Constructor principal: usar este cuando se llame desde el menú
+     */
+    public loginRegistro(AdraController controller, Menu menuParent) {
+        this.controller = controller;
+        this.menuParent = menuParent;
+        initComponents();
+        setLocationRelativeTo(null);
+    }
+
+    /**
+     * Constructor alterno (por compatibilidad si en algún lado usan solo controller)
+     */
+    public loginRegistro(AdraController controller) {
+        this(controller, null);
+    }
+
+    /**
+     * Constructor sin parámetros (solo para previsualizar en NetBeans)
      */
     public loginRegistro() {
-        initComponents();
+        this(DependencyBuilder.buildController(), null);
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -192,22 +215,56 @@ public class loginRegistro extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+        if (menuParent != null) {
+            menuParent.setLocationRelativeTo(this);
+            menuParent.setVisible(true);
+        } else {
+            new Menu(controller).setVisible(true);
+        }
+        dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+            if (controller == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Controller no configurado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        String usuario = jTextField1.getText().trim();
+        String contrasena = jTextField2.getText().trim();
+
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese usuario y contraseña.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // Aquí podrías validar según rol trabajador / admin, etc.
+        JOptionPane.showMessageDialog(this, "Acceso concedido.", "Información",
+                                      JOptionPane.INFORMATION_MESSAGE);
+
+        // Ir al formulario de Registro
+        Registro registro = new Registro(controller, menuParent);
+        registro.setLocationRelativeTo(this);
+        registro.setVisible(true);
+        dispose();
+    
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -218,10 +275,12 @@ public class loginRegistro extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new loginRegistro().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            AdraController controller = DependencyBuilder.buildController();
+            // aquí NO hay menuParent, se usa solo para probar
+            new loginRegistro(controller).setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
